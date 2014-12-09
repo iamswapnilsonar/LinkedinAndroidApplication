@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Linkedin</string>
+    <string name="str_get_connections">Get Connections</string>
+    <string name="str_share_post">Share Post</string>
+    <string name="menu_settings">Settings</string>
+    
+    <string name="crash_toast_text">Ooops ! I crashed, but a report has been sent to my developer to help fix the issue ! </string>
+
+</resources>

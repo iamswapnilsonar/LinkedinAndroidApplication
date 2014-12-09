@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Login" />
+
+    <LinearLayout
+        android:id="@+id/lin_options"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnLogin"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="User Name" />
+
+        <Button
+            android:id="@+id/btnPost"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Post" />
+
+        <Button
+            android:id="@+id/btnGetUserDetails"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="User Details" />
+        
+        <Button
+            android:id="@+id/btnGetUserCoonections"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Connections" />
+        
+        <Button
+            android:id="@+id/btnGetLocationCoordinates"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Location Coordinates" />
+        
+    </LinearLayout>
+
+</RelativeLayout>
