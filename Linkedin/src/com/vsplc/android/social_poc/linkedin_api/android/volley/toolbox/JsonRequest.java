@@ -21,9 +21,9 @@ import java.io.UnsupportedEncodingException;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.NetworkResponse;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Request;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyLog;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.ErrorListener;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.Listener;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyLog;
 
 /**
  * A request for retrieving a T type response body at a given URL that also

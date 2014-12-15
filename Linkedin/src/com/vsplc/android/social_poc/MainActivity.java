@@ -14,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,8 +33,8 @@ import com.vsplc.android.social_poc.linkedin_api.utils.Config;
 import com.vsplc.android.social_poc.logger.Logger;
 import com.vsplc.android.social_poc.model.LinkedinUser;
 import com.vsplc.android.social_poc.networking.ResponseManager;
+import com.vsplc.android.social_poc.utils.DataWrapper;
 import com.vsplc.android.social_poc.utils.LinkedinApplication;
-import com.vsplc.android.social_poc.utils.MethodUtils;
 
 /**
  * Fetching user's linkedin connections, following companies and user profile info. 
@@ -53,7 +54,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	
 //	private ListView lvLKConnections;
 	
-	List<LinkedinUser> listLinkedinUsers;
+	ArrayList<LinkedinUser> listLinkedinUsers;
 	LKConnectionsListAdapter adapter;
 	
 	@SuppressWarnings("unused")
@@ -146,14 +147,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
 				List<LinkedinUser> temp = new ResponseManager().parse(data);
 				listLinkedinUsers.clear();
-				listLinkedinUsers.addAll(temp);				
-				Log.v("MainActivity : ", "Total Connection Size : "+listLinkedinUsers.size());
-
-				LinkedinApplication.mapCountrywiseConnections = MethodUtils.getCountrywiseConnections(temp);
-
+				listLinkedinUsers.addAll(temp);		
+				
 				// save the connections information globally. 
 				LinkedinApplication.listGlobalConnections = listLinkedinUsers;
+				
+				Log.v("MainActivity : ", "Total Connection Size : "+listLinkedinUsers.size());
 
+//				LinkedinApplication.mapCountrywiseConnections = MethodUtils.getCountrywiseConnections(temp);
 				// adapter.notifyDataSetChanged();
 //				Toast.makeText(MainActivity.this, "Size : "+listLinkedinUsers.size(), Toast.LENGTH_SHORT).show();
 			} catch (Exception e) {
@@ -168,7 +169,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		@Override
 		protected void onPostExecute(String result) {
 			progressDialog.dismiss();
-			Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();			
+			Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();	
+			
+			Intent intent = new Intent(MainActivity.this, CustomizedListActivity.class);
+//	        intent.putParcelableArrayListExtra("list", listLinkedinUsers);
+	        intent.putExtra("data", new DataWrapper(listLinkedinUsers));
+	        startActivity(intent);
+			
 		}
 
 		@Override
@@ -328,8 +335,37 @@ public class MainActivity extends Activity implements View.OnClickListener{
 			break;
 			
 		case R.id.btnGetLocationCoordinates:
-//			_EasyLinkedIn.getLatAndLongFromLocation(MainActivity.this, getLocationInfoDownloadObserver);
-			MethodUtils.getIndustrywiseConnections("Computer Software", LinkedinApplication.mapCountrywiseConnections.get("in"));
+			_EasyLinkedIn.getLatAndLongFromLocation(MainActivity.this, "Greater Philadelphia,United States", getLocationInfoDownloadObserver);
+//			MethodUtils.getIndustrywiseConnections("Computer Software", LinkedinApplication.mapCountrywiseConnections.get("in"));
+			
+			
+			/*String location = "Greater Philadelphia,United State";
+			Geocoder gc = new Geocoder(mContext);
+			List<Address> addresses;
+			
+			try {
+				addresses = gc.getFromLocationName(location, 5);
+				
+				List<LatLng> ll = new ArrayList<LatLng>(addresses.size()); // A list to save the coordinates if they are available
+				for(Address a : addresses){
+					if(a.hasLatitude() && a.hasLongitude()){
+						Logger.vLog("btnGetLocationCoordinates : ", "Latitude : "+a.getLatitude()+"Longitude : "+a.getLongitude());
+						ll.add(new LatLng(a.getLatitude(), a.getLongitude()));
+					}  
+				}  
+				
+				Logger.vLog("List : ", ""+ll.size());
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // get the found Address Objects*/
+
+			
+
+			
+				
+						
 			break;
 			
 		case R.id.btnPost:

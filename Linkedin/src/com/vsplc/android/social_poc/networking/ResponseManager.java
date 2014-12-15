@@ -7,8 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
+import com.google.android.gms.maps.model.LatLng;
+import com.vsplc.android.social_poc.logger.Logger;
 import com.vsplc.android.social_poc.model.LinkedinUser;
 import com.vsplc.android.social_poc.utils.LinkedinApplication;
 
@@ -60,12 +60,15 @@ public class ResponseManager {
 
 		try {
 
+			@SuppressWarnings("unused")
 			int iConnectionCount = jsonObject.getInt(TAG_CONNECTION_COUNT);
 //			Log.v("Connection Count : ", "" + iConnectionCount);
 
+			@SuppressWarnings("unused")
 			int iConnectionStart = jsonObject.getInt(TAG_CONNECTION_START);
 //			Log.v("Connection Start : ", "" + iConnectionStart);
 
+			@SuppressWarnings("unused")
 			int iConnectionTotal = jsonObject.getInt(TAG_CONNECTION_TOTAL);
 //			Log.v("Connection Total : ", "" + iConnectionTotal);
 
@@ -215,4 +218,34 @@ public class ResponseManager {
 		
 		return listLinkedinUsers;
 	}// end of parse() method
+	
+	
+	public LatLng parseGeocoderWebserviceResult(String result){
+		
+		double lat = 0;
+		double lng = 0;
+
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject = new JSONObject(result);
+
+			lat = ((JSONArray)jsonObject.get("results")).getJSONObject(0)
+					.getJSONObject("geometry").getJSONObject("location")
+					.getDouble("lat");
+
+			lng = ((JSONArray)jsonObject.get("results")).getJSONObject(0)
+					.getJSONObject("geometry").getJSONObject("location")
+					.getDouble("lng");
+
+			Logger.vLog("latitude", "" + lat);
+			Logger.vLog("longitude", "" + lng);
+
+		} catch (JSONException e) {
+			Logger.vLog("JSONException", e.toString());
+			e.printStackTrace();
+		}
+
+		return new LatLng(lat, lng);
+		
+	}
 }

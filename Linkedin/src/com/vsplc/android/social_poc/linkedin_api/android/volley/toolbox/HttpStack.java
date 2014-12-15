@@ -16,13 +16,13 @@
 
 package com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox;
 
-import com.vsplc.android.social_poc.linkedin_api.android.volley.AuthFailureError;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.Request;
+import java.io.IOException;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 
-import java.io.IOException;
-import java.util.Map;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.AuthFailureError;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.Request;
 
 /**
  * An HTTP stack abstraction.

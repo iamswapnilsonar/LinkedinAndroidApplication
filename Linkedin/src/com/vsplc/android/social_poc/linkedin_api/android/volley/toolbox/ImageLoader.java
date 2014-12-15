@@ -15,6 +15,9 @@
  */
 package com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.os.Handler;
@@ -23,13 +26,9 @@ import android.widget.ImageView;
 
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Request;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.RequestQueue;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyError;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.ErrorListener;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.Listener;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox.ImageRequest;
-
-import java.util.HashMap;
-import java.util.LinkedList;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyError;
 
 /**
  * Helper that handles loading and caching images from remote URLs.

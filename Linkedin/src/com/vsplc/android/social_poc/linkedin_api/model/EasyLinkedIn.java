@@ -187,15 +187,14 @@ public class EasyLinkedIn {
 	 * @param downloadObserver
 	 * @param url Linkedin URL 
 	 */
-	public void getLatAndLongFromLocation(Context context, DownloadObserver downloadObserver) {
+	public void getLatAndLongFromLocation(Context context, String address, DownloadObserver downloadObserver) {
 
-		String url = "http://maps.google.com/maps/api/geocode/json?address=Pune,India&sensor=false";			
-		
+//		String url = "http://maps.google.com/maps/api/geocode/json?address="+address+"&sensor=false";			
+		String url = "http://maps.google.com/maps/api/geocode/json?address=Greater%20Philadelphia,United%20States&sensor=false";
 		Log.d("getLatAndLongFromLocation : Check", url);		
 		_GetWebservice = new GetRequestWebService(context, downloadObserver, url);
 		_GetWebservice.execute();
 	}
-	
 	
 	
 	static String get_ConsumerKey() {

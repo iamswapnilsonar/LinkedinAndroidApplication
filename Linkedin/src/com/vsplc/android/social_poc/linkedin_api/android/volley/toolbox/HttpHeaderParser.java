@@ -16,14 +16,14 @@
 
 package com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox;
 
-import com.vsplc.android.social_poc.linkedin_api.android.volley.Cache;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.NetworkResponse;
+import java.util.Map;
 
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.protocol.HTTP;
 
-import java.util.Map;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.Cache;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.NetworkResponse;
 
 /**
  * Utility methods for parsing HTTP headers.

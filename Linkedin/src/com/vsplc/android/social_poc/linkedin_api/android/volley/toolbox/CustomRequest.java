@@ -1,16 +1,17 @@
 package com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;    
+import java.util.Map;
+
 import org.json.JSONException;
-import org.json.JSONObject;    
+import org.json.JSONObject;
+
 import com.vsplc.android.social_poc.linkedin_api.android.volley.NetworkResponse;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.ParseError;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Request;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.ErrorListener;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.Listener;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox.HttpHeaderParser;
 
 public class CustomRequest extends Request<JSONObject> {
 

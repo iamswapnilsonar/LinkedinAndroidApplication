@@ -6,9 +6,9 @@ import android.content.Context;
 
 import com.vsplc.android.social_poc.linkedin_api.android.volley.RequestQueue;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyError;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.ErrorListener;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.Response.Listener;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyError;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox.JsonObjectRequest;
 import com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox.Volley;
 import com.vsplc.android.social_poc.linkedin_api.interfaces.DownloadObserver;

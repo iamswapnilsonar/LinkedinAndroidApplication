@@ -16,11 +16,6 @@
 
 package com.vsplc.android.social_poc.linkedin_api.android.volley.toolbox;
 
-import android.os.SystemClock;
-
-import com.vsplc.android.social_poc.linkedin_api.android.volley.Cache;
-import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyLog;
-
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +29,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import android.os.SystemClock;
+
+import com.vsplc.android.social_poc.linkedin_api.android.volley.Cache;
+import com.vsplc.android.social_poc.linkedin_api.android.volley.VolleyLog;
 
 /**
  * Cache implementation that caches files directly onto the hard disk in the specified

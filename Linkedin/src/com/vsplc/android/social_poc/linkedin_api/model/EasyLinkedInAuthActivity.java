@@ -5,13 +5,13 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebSettings;
+import android.webkit.WebSettings.PluginState;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -19,7 +19,6 @@ import android.webkit.WebViewClient;
 import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.social_poc.linkedin_api.interfaces.DownloadObserver;
 import com.vsplc.android.social_poc.linkedin_api.interfaces.EasyLinkedInConstants;
-import com.vsplc.android.social_poc.linkedin_api.utils.DialogBuilder;
 import com.vsplc.android.social_poc.linkedin_api.webservices.AccessTokenWebService;
 import com.vsplc.android.social_poc.logger.Logger;
 
@@ -132,7 +131,7 @@ public class EasyLinkedInAuthActivity extends Activity {
 	private void configureWebView(WebSettings webSettings) {
 
 		webSettings.setJavaScriptEnabled(true);
-		webSettings.setPluginsEnabled(true);
+		webSettings.setPluginState(PluginState.ON);
 		webSettings.setRenderPriority(RenderPriority.HIGH);
 
 	}
