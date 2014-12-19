@@ -11,11 +11,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +26,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.activity.LKConnectionsListAdapter;
 import com.vsplc.android.poc.linkedin.linkedin_api.interfaces.Callback;
 import com.vsplc.android.poc.linkedin.linkedin_api.interfaces.DownloadObserver;
@@ -45,7 +46,6 @@ import com.vsplc.android.poc.linkedin.utils.MethodUtils;
  */
 public class MainActivity extends Activity implements View.OnClickListener{
 
-	@SuppressWarnings("unused")
 	private Context mContext;
 	
 	private EasyLinkedIn _EasyLinkedIn;
@@ -69,7 +69,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	
 	private ProgressDialog progressDialog;
 	
-	private DoingLengthyTask doingLengthyTask;
+	public boolean isConnectionsRequested = false;
+	public boolean isConnectionsWorkCompleted = false;	
 	
 	private class LongOperationForSharePost extends AsyncTask<String, Void, String> {
 
@@ -144,6 +145,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		@Override
 		protected String doInBackground(Object... params) {
 
+			Logger.vLog("DoingLengthyTask","doInBackground");	
+			
 			Object data = params[0];
 
 			try {
@@ -165,23 +168,21 @@ public class MainActivity extends Activity implements View.OnClickListener{
 				e.printStackTrace();
 				Log.v("MainActivity : ", "Exception : "+e.toString());
 			}
-
+			
 			return "All Connection are fetched..!!";
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			
-			if (progressDialog.isShowing()) {
+			Logger.vLog("DoingLengthyTask","onPostExecute");	
+			
+			isConnectionsWorkCompleted = true;
+			/*if (progressDialog.isShowing()) {
 				progressDialog.dismiss();
 				Logger.vLog("onPostExecute : ", "listLinkedinUsers : "+listLinkedinUsers.size());
 				Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();	
-			}
-			
-			/*Intent intent = new Intent(MainActivity.this, CustomizedListActivity.class);
-//	        intent.putParcelableArrayListExtra("list", listLinkedinUsers);
-	        intent.putExtra("data", new DataWrapper(listLinkedinUsers));
-	        startActivity(intent);*/
+			}*/
 			
 		}
 
@@ -196,7 +197,49 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	}
 	
 	
-    @Override
+	public class AsyncGetAllConnections extends AsyncTask<Void, Void, String> {
+
+		@Override
+		protected String doInBackground(Void... params) {			
+			
+			Logger.vLog("AsyncGetAllConnections","doInBackground");			
+			
+			_EasyLinkedIn.getConnections(mContext, getUserInfoDownloadObserver, USER_INFO_FEILDS);			
+			return "Success";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			
+			Logger.vLog("AsyncGetAllConnections","onPostExecute");	
+			
+			if (isConnectionsRequested && isConnectionsWorkCompleted && result.equals("Success")) {
+				
+				// Open up connection list layout
+				progressDialog.dismiss();
+				
+				Intent intent = new Intent(MainActivity.this, CustomizedListActivity.class);
+				DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections);
+		        intent.putExtra("data", dataWrapper);
+		        startActivity(intent);
+		        
+			}else{
+				// NOP				
+			}
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {}
+	}
+	
+	
+    @SuppressLint({ "InlinedApi", "NewApi" })
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
@@ -209,26 +252,37 @@ public class MainActivity extends Activity implements View.OnClickListener{
         _EasyLinkedIn = EasyLinkedIn.getInstance(this, Config.LINKEDIN_CONSUMER_KEY, Config.LINKEDIN_CONSUMER_SECRET, 
     			"https://www.linkedin.com", "", "");
         
+        listLinkedinUsers = new ArrayList<LinkedinUser>();
+        
         if (EasyLinkedIn.hasAccessToken()) {
 			// User Access Token
         	Logger.vLog("Access Token", EasyLinkedIn.getAccessToken());
             Logger.vLog("Access Secret", EasyLinkedIn.getAccessSecret());
             btnLogin.setVisibility(View.INVISIBLE);
             
+            AsyncGetAllConnections asyncConnections = new AsyncGetAllConnections();
+            if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
+            	asyncConnections.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+            else
+            	asyncConnections.execute((Void[])null);
+            
 		}else{
-			linOptions.setVisibility(View.INVISIBLE);			
+			linOptions.setVisibility(View.INVISIBLE);
 		}
         
 //        lvLKConnections = (ListView) findViewById(R.id.lvLinkedinConnections);
 //
-        listLinkedinUsers = new ArrayList<LinkedinUser>();
         
-        if (LinkedinApplication.listGlobalConnections.size() >=  LinkedinApplication.iConnectionCount && 
-        		LinkedinApplication.listGlobalConnections.size() > 0) {
+        
+//        new AsyncGetAllConnections().execute();
+        
+        
+        /*// LinkedinApplication.listGlobalConnections.size() >=  LinkedinApplication.iConnectionCount &&
+        if (LinkedinApplication.listGlobalConnections.size() > 0) {
         	//NOP
         }else{
         	_EasyLinkedIn.getConnections(mContext, getUserInfoDownloadObserver, USER_INFO_FEILDS);
-        }
+        }*/
     }
 
     private void initUI() {
@@ -258,10 +312,38 @@ public class MainActivity extends Activity implements View.OnClickListener{
     	@Override
     	public void onDownloadingStart() {}
 
-    	@Override
+    	@SuppressLint("NewApi")
+		@Override
     	public void onDownloadingComplete(Object data) {
     		Log.v("onDownloadingComplete : ", ""+data.toString());
-    		new DoingLengthyTask().execute(data);
+    		
+    		ResponseManager manager = new ResponseManager();
+    		
+    		try {
+    			
+    			int connection_count = manager.parseConnectionCount(data);
+    			
+    			// result jo mil raha h wo compare karo with stored result
+    			if (LinkedinApplication.listCityInfo.size() >= connection_count) {
+					// NOP
+    				isConnectionsWorkCompleted = true;
+				}else{
+					
+					DoingLengthyTask asyncLengthyTask = new DoingLengthyTask();
+					
+					if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
+						asyncLengthyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Object)data);
+					else
+						asyncLengthyTask.execute((Object)data);
+					
+//					new DoingLengthyTask().execute(data);
+				}
+    			
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+    		
     	}
 
     	@Override
@@ -300,13 +382,20 @@ public class MainActivity extends Activity implements View.OnClickListener{
 			
 		    _EasyLinkedIn.authorize(MainActivity.this, new Callback() {
 
-		        @Override
+		        @SuppressLint("NewApi")
+				@Override
 		        public void onSucess(Object data) {
 		        	
 		        	Logger.vLog("onSucess : ", ""+data.toString());
 		        	btnLogin.setVisibility(View.INVISIBLE);
 		        	linOptions.setVisibility(View.VISIBLE);
 		        	
+		        	AsyncGetAllConnections asyncConnections = new AsyncGetAllConnections();
+		            if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
+		            	asyncConnections.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+		            else
+		            	asyncConnections.execute((Void[])null);
+		        			        	
 		        	// String following_companies_url = "https://api.linkedin.com/v1/people/~/following/companies:(id,name)?format=json&oauth2_access_token="+EasyLinkedIn.getAccessToken();			            
 //		            _EasyLinkedIn.getFollowingCompanies(MainActivity.this, getUserInfoDownloadObserver, companyinfo_feilds);
 		            
@@ -326,18 +415,31 @@ public class MainActivity extends Activity implements View.OnClickListener{
 			// Get users connection info
 			// String connection_url = "https://api.linkedin.com/v1/people/~/connections";
 			
-			if (LinkedinApplication.listGlobalConnections.size() >=  LinkedinApplication.iConnectionCount) {
+			isConnectionsRequested = true ;
+			
+			if (isConnectionsWorkCompleted) {
+				
+				progressDialog.dismiss();
 				
 				Intent intent = new Intent(MainActivity.this, CustomizedListActivity.class);
 				DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections);
 		        intent.putExtra("data", dataWrapper);
 		        startActivity(intent);
-								
+				
 			}else{
 				// Make webservice call to fetch all the connnction data
 		        progressDialog.setMessage("Fetching Connections..");
 		        progressDialog.show();
 			}
+			
+			
+			/*if (LinkedinApplication.listGlobalConnections.size() >=  LinkedinApplication.iConnectionCount) {
+				
+				
+								
+			}else{
+				
+			}*/
 			                      
            break;
 
@@ -390,4 +492,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		
 	}
     
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		
+		isConnectionsRequested = false;
+		isConnectionsWorkCompleted = false;
+	}
 }

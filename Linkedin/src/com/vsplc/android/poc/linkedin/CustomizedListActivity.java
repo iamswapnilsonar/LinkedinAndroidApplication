@@ -1,26 +1,12 @@
 package com.vsplc.android.poc.linkedin;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.http.SslError;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,17 +24,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vsplc.android.poc.linkedin.adapter.IndustryListAdapter;
@@ -77,9 +58,12 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 
 	static int filteringPercentage = 0;
 
-	public Set<String> cities = new HashSet<String>();
+	public static Set<String> cities = new HashSet<String>();
 	public Set<String> industries = new HashSet<String>();
 
+	public boolean isGoogleMapRequested = false;
+	public boolean isCitysWorkCompleted = false;
+	
 	private GoogleMap googleMap;
 	private MarkerOptions markerOptions;
 
@@ -111,19 +95,23 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 
 				if (user.location != null && user.country_code != null) {
 
-					String mCity = MethodUtils.getCityNameFromLocation(
-							user.location, user.country_code);
+					String mCity = MethodUtils.getCityNameFromLocation(user.location, user.country_code);
 
 					// Prepared how many city connections available..
-					if (mCity != null && cities.add(mCity) && 
-							LinkedinApplication.listCityInfo.contains(mCity)) {
+					if (mCity != null && cities.add(mCity)) {
 
-						final City city = new City(mCity);
-						String mcountry = MethodUtils.getISOCountryNameFromCC(user.country_code);
-						city.country = mcountry;
-						
-						LinkedinApplication.listCityInfo.add(city);
-						
+						if (LinkedinApplication.listCityInfo.contains(mCity)) {
+							//NOP
+						}else{
+							
+							City city = new City(mCity);
+							String mcountry = MethodUtils.getISOCountryNameFromCC(user.country_code);
+							city.country = mcountry;
+							
+							LinkedinApplication.listCityInfo.add(city);
+							
+						}
+					
 					} else {
 						Logger.vLog("listCityInfo", mCity + " already present.");
 					}
@@ -138,8 +126,10 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 		@Override
 		protected void onPostExecute(String result) {
 			// progressDialog.dismiss();
-			Toast.makeText(mContext, result + " in retrieval of cities.", Toast.LENGTH_SHORT).show();
-			new AyscGettingCityInfo().execute();
+//			Toast.makeText(mContext, result + " in retrieval of cities.", Toast.LENGTH_SHORT).show();			
+			if (result.equals("Success")) {
+				new AyscGettingCityInfo().execute();
+			}					
 		}
 
 	}
@@ -152,12 +142,18 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 			for (int i = 0; i < LinkedinApplication.listCityInfo.size(); i++) {
 
 				City city = LinkedinApplication.listCityInfo.get(i);
-				
 				Logger.vLog("AyscGettingCityInfo : City ", city.name);
+
 				
-				String address = city.name + "," + city.country;
-//				address = address.replaceAll("\\s", "%20");
-				city.latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(CustomizedListActivity.this, address);
+				if (city.latLng == null) {
+					
+					String address = city.name + "," + city.country;
+//					address = address.replaceAll("\\s", "%20");
+					city.latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(CustomizedListActivity.this, address);
+					
+				}else{
+					// NOP
+				}
 				
 				publishProgress(i);
 			}
@@ -168,11 +164,8 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 		@Override
 		protected void onPostExecute(String result) {
 
-			if (progressDialog.isShowing()) {
-				progressDialog.dismiss();
-				Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
-			}
-
+			isCitysWorkCompleted = true;
+			
 			for (int i = 0; i< LinkedinApplication.listCityInfo.size(); i++) {
 
 				City city = LinkedinApplication.listCityInfo.get(i);
@@ -202,6 +195,24 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 			}
 			// progressDialog.show();
 
+			if (isGoogleMapRequested && isCitysWorkCompleted && result.equals("Completed")) {
+				
+				progressDialog.dismiss();
+				
+				if (list.getVisibility() == View.VISIBLE
+						|| industriesList.getVisibility() == View.VISIBLE 
+						|| webView.getVisibility() == View.VISIBLE) {
+
+					list.setVisibility(View.GONE);
+					industriesList.setVisibility(View.GONE);
+					webView.setVisibility(View.GONE);
+					
+					((RelativeLayout) findViewById(R.id.rl_googlemap_view)).setVisibility(View.VISIBLE);
+
+				}
+				
+			}
+			
 			/**
 			 * Display all the pin center of screen. All pins are visible.
 			 * 
@@ -489,8 +500,9 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 		googleMap.setOnMarkerClickListener(this);
 		googleMap.setOnInfoWindowClickListener(this);
 
+		
 		// get and store information about cities
-		new AsyncTaskForCities().execute(listLinkedinUsers);
+		new AsyncTaskForCities().execute(listLinkedinUsers);		
 
 		// showing progress dialog while performing heavy tasks..
 		progressDialog = new ProgressDialog(mContext);
@@ -575,29 +587,37 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 				// TODO Auto-generated method stub
 //				 new DoingLengthyTask().execute(listLinkedinUsers);
 
-				Logger.vLog("btnMapAll : ", "filteringPercentage : "+ filteringPercentage + " listCityInfo : "
+				isGoogleMapRequested = true;
+				
+				if (isCitysWorkCompleted) {
+					
+					if (list.getVisibility() == View.VISIBLE
+							|| industriesList.getVisibility() == View.VISIBLE 
+							|| webView.getVisibility() == View.VISIBLE) {
+
+						list.setVisibility(View.GONE);
+						industriesList.setVisibility(View.GONE);
+						webView.setVisibility(View.GONE);
+						
+						((RelativeLayout) findViewById(R.id.rl_googlemap_view)).setVisibility(View.VISIBLE);
+
+					}
+					
+				}else{
+					progressDialog.setMessage("Preparing Google Map..");
+					progressDialog.show();
+				}
+				
+				/*Logger.vLog("btnMapAll : ", "filteringPercentage : "+ filteringPercentage + " listCityInfo : "
 						+ LinkedinApplication.listCityInfo.size());
 
 				if (filteringPercentage < LinkedinApplication.listCityInfo.size() - 1) {
 
-					progressDialog.setMessage("Preparing Google Map..");
-					progressDialog.show();
+					
 
 				} else {
 					Toast.makeText(mContext, "All heavy work is completed..", Toast.LENGTH_SHORT).show();
-				}
-
-				if (list.getVisibility() == View.VISIBLE
-						|| industriesList.getVisibility() == View.VISIBLE 
-						|| webView.getVisibility() == View.VISIBLE) {
-
-					list.setVisibility(View.GONE);
-					industriesList.setVisibility(View.GONE);
-					webView.setVisibility(View.GONE);
-					
-					((RelativeLayout) findViewById(R.id.rl_googlemap_view)).setVisibility(View.VISIBLE);
-
-				}
+				}*/
 
 			}
 		});
@@ -688,5 +708,14 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 			}*/
 		}
 		
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+
+		isCitysWorkCompleted = false;
+		isGoogleMapRequested = false;
 	}
 }

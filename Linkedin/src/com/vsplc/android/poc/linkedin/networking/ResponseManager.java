@@ -220,6 +220,26 @@ public class ResponseManager {
 	}// end of parse() method
 	
 	
+	public int parseConnectionCount(Object jsonResponseObject) throws Exception { 
+
+		int iCount = 0;	
+		JSONObject jsonObject = (JSONObject) jsonResponseObject;
+
+		try {
+
+			int iConnectionCount = jsonObject.getInt(TAG_CONNECTION_COUNT);
+			Logger.vLog("Connection Count : ", "" + iConnectionCount);
+			iCount = iConnectionCount;
+
+		} catch (JSONException jsonException) {
+			// TODO: handle exception
+			iCount = -1;
+		}
+		
+		return iCount;
+	}// end of parseConnectionCount() method
+	
+	
 	public LatLng parseGeocoderWebserviceResult(String result){
 		
 		double lat = 0;

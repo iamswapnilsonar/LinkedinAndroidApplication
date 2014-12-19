@@ -54,8 +54,8 @@ public class MethodUtils {
 		} catch (IOException e) { // TODO Auto-generated catch block
 			e.printStackTrace(); }
 
-		Logger.vLog("getLatLngFromGivenAddressGeoCoder", "Address : "+youraddress);
-		Logger.vLog("getLatLngFromGivenAddressGeoCoder", "Latitude : "+latitude+" Longitude : "+longitude);
+//		Logger.vLog("getLatLngFromGivenAddressGeoCoder", "Address : "+youraddress);
+		Logger.vLog("getLatLngFromGivenAddressGeoCoder", "Address : "+youraddress+" Latitude : "+latitude+" Longitude : "+longitude);
 		
 		position = new LatLng(latitude, longitude);
 		
