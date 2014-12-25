@@ -16,6 +16,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.vsplc.android.poc.linkedin.activity.LKConnectionsListAdapter;
 import com.vsplc.android.poc.linkedin.linkedin_api.interfaces.Callback;
 import com.vsplc.android.poc.linkedin.linkedin_api.interfaces.DownloadObserver;
@@ -34,6 +37,7 @@ import com.vsplc.android.poc.linkedin.linkedin_api.utils.Config;
 import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.networking.ResponseManager;
+import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
 import com.vsplc.android.poc.linkedin.utils.DataWrapper;
 import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
@@ -61,17 +65,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	@SuppressWarnings("unused")
 	private LinkedinUser user;	
 	
-	// Linked-in User Profile information
-	public static final String USER_INFO_FEILDS = "id,first-name,last-name,headline,location:(name,country:(code)),industry,picture-url,public-profile-url";
-	
-	// Linked-in Company Profile information
-	public static final String COMPANY_INFO_FEILDS = "id,name";
-	
 	private ProgressDialog progressDialog;
 	
 	public boolean isConnectionsRequested = false;
 	public boolean isConnectionsWorkCompleted = false;	
 	
+	private SharedPreferences  mPrefs;
+	private Editor prefsEditor;
+	 
 	private class LongOperationForSharePost extends AsyncTask<String, Void, String> {
 
 		@Override
@@ -204,7 +205,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 			
 			Logger.vLog("AsyncGetAllConnections","doInBackground");			
 			
-			_EasyLinkedIn.getConnections(mContext, getUserInfoDownloadObserver, USER_INFO_FEILDS);			
+			_EasyLinkedIn.getConnections(mContext, getUserInfoDownloadObserver, ConstantUtils.USER_INFO_FEILDS);			
 			return "Success";
 		}
 
@@ -305,6 +306,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         // showing progress dialog while performing heavy tasks..
         progressDialog = new ProgressDialog(MainActivity.this);
         
+        mPrefs = getPreferences(MODE_PRIVATE);
+        prefsEditor = mPrefs.edit();
 	}
 
 	private DownloadObserver getUserInfoDownloadObserver = new DownloadObserver() {
@@ -343,6 +346,38 @@ public class MainActivity extends Activity implements View.OnClickListener{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
+    		
+    	}
+
+    	@Override
+    	public void onDownloadFailure(Object errorData) {}
+    };
+    
+	private DownloadObserver getUserDetailsDownloadObserver = new DownloadObserver() {
+
+    	@Override
+    	public void onDownloadingStart() {}
+
+    	@SuppressLint("NewApi")
+		@Override
+    	public void onDownloadingComplete(Object data) {
+    		Log.v("onDownloadingComplete : ", ""+data.toString());
+    		
+    		ResponseManager manager = new ResponseManager();
+    		
+    		try {
+				LinkedinUser user = manager.parseUserResponse(data);
+				Logger.vLog("getUserDetailsDownloadObserver", user.toString());
+				
+				saveObject(user);
+				
+				LinkedinUser linkedinUser = getObject();
+				Logger.vLog("getUserDetailsDownloadObserver", linkedinUser.toString());
+				
+			} catch (Exception ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}    		
     		
     	}
 
@@ -445,7 +480,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
 		case R.id.btnGetUserDetails:
 			// Get user info
-			_EasyLinkedIn.getUserInfo(MainActivity.this, getUserInfoDownloadObserver, USER_INFO_FEILDS);
+			_EasyLinkedIn.getUserInfo(MainActivity.this, getUserDetailsDownloadObserver, ConstantUtils.USER_INFO_FEILDS);
 			break;
 			
 		case R.id.btnGetLocationCoordinates:
@@ -500,4 +535,21 @@ public class MainActivity extends Activity implements View.OnClickListener{
 		isConnectionsRequested = false;
 		isConnectionsWorkCompleted = false;
 	}
+	
+    public LinkedinUser getObject(){
+    	Gson gson = new Gson();
+        String json = mPrefs.getString("LinkedinUser", "");
+        LinkedinUser user = gson.fromJson(json, LinkedinUser.class);
+        return user;
+    }
+    
+    public void saveObject(LinkedinUser object){
+    	 Gson gson = new Gson();
+         String json = gson.toJson(object);
+         prefsEditor.putString("LinkedinUser", json);
+         prefsEditor.commit();
+         
+//         Toast.makeText(mContext, "Object Saved..", Toast.LENGTH_SHORT).show();
+         //Toast.makeText(getApplicationContext(), "Object Stored", 1000).show();
+    }
 }

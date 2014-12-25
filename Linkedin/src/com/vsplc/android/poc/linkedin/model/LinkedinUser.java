@@ -18,6 +18,7 @@ public class LinkedinUser implements Serializable {
 	public LinkedinUser(String id, String fname, String lname, String industry,
 			String country_code, String location, String profilepicture,
 			String profileurl, String headline) {
+		
 		this.id = id;
 		this.fname = fname;
 		this.lname = lname;

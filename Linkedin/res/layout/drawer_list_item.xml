@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector" >
+
+    <FrameLayout
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.21"
+        android:padding="5dip" >
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="24dip"
+            android:layout_height="24dip"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/desc_list_item_icon"
+            android:src="@drawable/ic_connections" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.79"
+        android:paddingBottom="10dip"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:paddingTop="10dip" >
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Swapnil Sonar"
+            android:textColor="@color/list_item_title"
+            android:textSize="18sp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/counter_bg"
+        android:textColor="@color/counter_text_color" />
+
+</LinearLayout>

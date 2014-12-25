@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/dark_blue_color_code"
+    android:choiceMode="singleChoice"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark_blue_color_code"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/iv_profile"
+            android:layout_width="60dip"
+            android:layout_height="60dip"
+            android:layout_marginBottom="2dip"
+            android:layout_marginTop="10dip"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tv_profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dip"
+            android:text="Swapnil Sonar"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_profile_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dip"
+            android:text="swapnil.sonar@vsplc.com"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.25dp"
+            android:background="@color/list_divider" />
+    </LinearLayout>
+
+    <!-- Listview to display slider menu -->
+
+    <ListView
+        android:id="@+id/list_slidermenu"
+        android:layout_width="240dp"
+        android:layout_height="fill_parent"
+        android:background="@color/list_background"
+        android:dividerHeight="0.25dp"
+        android:listSelector="@drawable/list_selector" />
+
+</LinearLayout>

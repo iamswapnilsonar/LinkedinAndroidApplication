@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rel_profile_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/lin_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark_blue_color_code"
+        android:orientation="horizontal"
+        android:paddingBottom="10dip"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:paddingTop="10dip" >
+
+        <Button
+            android:id="@+id/btn_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:background="@drawable/btn_list_tap_effect" />
+
+        <Button
+            android:id="@+id/btn_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:background="@drawable/btn_list_tap_effect" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/lin_profile_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lin_header"
+        android:background="@color/faint_blue_color_code"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="5dip" >
+
+        <ImageView
+            android:id="@+id/iv_profileimage"
+            android:layout_width="75dip"
+            android:layout_height="75dip"
+            android:paddingBottom="2dip"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tv_profilename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dip"
+            android:text="Swapnil Sonar"
+            android:textColor="@android:color/white"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_profile_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:freezesText="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:paddingBottom="3dip"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="Android Developer at Vatsa Solutions Pvt. Ltd."
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_profile_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pune, Maharashtra, Pune"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/lin_profile_image"
+        android:layout_marginTop="15dip" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dip"
+                android:orientation="horizontal" >
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.21"
+                    android:background="@color/dark_blue_color_code"
+                    android:padding="5dip" >
+
+                    <ImageView
+                        android:layout_width="25dip"
+                        android:layout_height="25dip"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:src="@drawable/ic_connections" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="10dip"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.79"
+                    android:background="@color/faint_blue_color_code"
+                    android:padding="5dip" >
+
+                    <TextView
+                        android:id="@+id/tv_connection_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:maxLines="1"
+                        android:padding="5dip"
+                        android:text="500"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dip"
+                android:orientation="horizontal" >
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.21"
+                    android:background="@color/dark_blue_color_code"
+                    android:padding="5dip" >
+
+                    <ImageView
+                        android:layout_width="25dip"
+                        android:layout_height="25dip"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:src="@drawable/ic_skills" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="10dip"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.79"
+                    android:background="@color/faint_blue_color_code"
+                    android:padding="5dip" >
+
+                    <TextView
+                        android:id="@+id/tv_skills"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:maxLines="1"
+                        android:padding="5dip"
+                        android:text="Core Java, C, Android"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dip"
+                android:orientation="horizontal" >
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.21"
+                    android:background="@color/dark_blue_color_code"
+                    android:padding="5dip" >
+
+                    <ImageView
+                        android:layout_width="25dip"
+                        android:layout_height="25dip"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:src="@drawable/ic_language" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="10dip"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.79"
+                    android:background="@color/faint_blue_color_code"
+                    android:padding="5dip" >
+
+                    <TextView
+                        android:id="@+id/tv_languages"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:maxLines="1"
+                        android:padding="5dip"
+                        android:text="English, Hindi, English"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dip"
+                android:orientation="horizontal" >
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.21"
+                    android:background="@color/dark_blue_color_code"
+                    android:padding="5dip" >
+
+                    <ImageView
+                        android:layout_width="25dip"
+                        android:layout_height="25dip"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:src="@drawable/ic_industry" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="10dip"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.79"
+                    android:background="@color/faint_blue_color_code"
+                    android:padding="5dip" >
+
+                    <TextView
+                        android:id="@+id/tv_industry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:maxLines="1"
+                        android:padding="5dip"
+                        android:text="swapnil.sonar@vsplc.com"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dip"
+                android:orientation="horizontal" >
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.21"
+                    android:background="@color/dark_blue_color_code"
+                    android:padding="5dip" >
+
+                    <ImageView
+                        android:layout_width="25dip"
+                        android:layout_height="25dip"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:src="@drawable/ic_profile" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="10dip"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.79"
+                    android:background="@color/faint_blue_color_code"
+                    android:padding="5dip" >
+
+                    <TextView
+                        android:id="@+id/tv_profile_url"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:freezesText="true"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:maxLines="1"
+                        android:padding="5dip"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="swapnil.sonar@vsplc.com"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lin_profile_image"
+                android:layout_marginBottom="5dip"
+                android:orientation="horizontal" >
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.21"
+                    android:background="@color/dark_blue_color_code"
+                    android:padding="10dip" >
+
+                    <ImageView
+                        android:layout_width="25dip"
+                        android:layout_height="25dip"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:src="@drawable/ic_summary" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="10dip"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.79"
+                    android:background="@color/faint_blue_color_code"
+                    android:padding="5dip" >
+
+                    <TextView
+                        android:id="@+id/tv_summary"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:maxLines="10"
+                        android:minLines="1"
+                        android:padding="5dip"
+                        android:scrollbars="vertical"
+                        android:text="I am an IT professional; completed BE in Computer Science and Engineering from University of Pune. Form around 2 years, I have been working on java, android platform and work with a great passion to give back to industry what I have learned so far. \n\nI am interested in making good apps and games for people, from doing planning to programming, whatever possibilities to make a successful application or games. I am always looking for interesting problems to solve.\n\nProfessional objective of joining a values-driven organization where I can grow my skills. I aim to pursue a challenging career and being a part of a progressive and esteemed organization that gives scope to enhance my knowledge ultimately results into organization’s progress.\n\nCurrently, I am working as Software Developer in Vatsa Solution Pvt Ltd.\n\nMy skills and Software technology interests: \nJava, Android, PhoneGap, Mobile Application Development, JavaScript, SQLite Database."
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+                </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

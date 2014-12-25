@@ -1,27 +1,23 @@
 package com.vsplc.android.poc.linkedin.adapter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.logger.Logger;
-import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 
 public class IndustryListAdapter extends BaseAdapter {
     
     @SuppressWarnings("unused")
 	private Activity activity;
-    private Set<String> data;
     private static LayoutInflater inflater=null; 
     private List<String> listIndustries;
     
@@ -49,7 +45,8 @@ public class IndustryListAdapter extends BaseAdapter {
         return position;
     }
     
-    public View getView(int position, View convertView, ViewGroup parent) {
+    @SuppressLint("InflateParams")
+	public View getView(int position, View convertView, ViewGroup parent) {
         View vi=convertView;
         
         if(convertView == null)

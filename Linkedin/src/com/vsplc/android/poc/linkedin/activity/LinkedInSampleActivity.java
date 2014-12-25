@@ -75,18 +75,18 @@ public class LinkedInSampleActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.base_activity);
 		
 		if( Build.VERSION.SDK_INT >= 9){
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy); 
 		}
 		
-		share = (Button) findViewById(R.id.share);
-		name = (TextView) findViewById(R.id.name);
-		et = (EditText) findViewById(R.id.et_share);
-		login = (Button) findViewById(R.id.login);
-		photo = (ImageView) findViewById(R.id.photo);
+//		share = (Button) findViewById(R.id.share);
+//		name = (TextView) findViewById(R.id.name);
+//		et = (EditText) findViewById(R.id.et_share);
+//		login = (Button) findViewById(R.id.login);
+//		photo = (ImageView) findViewById(R.id.photo);
 
 		login.setOnClickListener(new OnClickListener() {
 			@Override

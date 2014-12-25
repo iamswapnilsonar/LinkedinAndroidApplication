@@ -22,10 +22,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.Address;
 import android.location.Geocoder;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
+import com.vsplc.android.poc.linkedin.BaseActivity;
 import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 
@@ -277,4 +281,26 @@ public class MethodUtils {
 		String strCountryName = obj.getDisplayCountry();
 		return strCountryName;
 	}
+	
+	
+    public static LinkedinUser getObject(Context context){
+    	SharedPreferences mPrefs = ((BaseActivity) context).getPreferences(Context.MODE_PRIVATE);
+    	Gson gson = new Gson();
+        String json = mPrefs.getString("LinkedinUser", "");
+        LinkedinUser user = gson.fromJson(json, LinkedinUser.class);
+        return user;
+    }
+    
+    public static void saveObject(Context context, LinkedinUser object){
+
+    	SharedPreferences mPrefs = ((BaseActivity) context).getPreferences(Context.MODE_PRIVATE);
+    	Editor prefsEditor = mPrefs.edit();
+
+    	Gson gson = new Gson();
+    	String json = gson.toJson(object);
+    	prefsEditor.putString("LinkedinUser", json);
+    	prefsEditor.commit();
+
+    	Logger.vLog("saveObject", "Object Saved..");
+    }
 }
