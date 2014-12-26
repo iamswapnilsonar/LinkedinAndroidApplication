@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,7 +21,9 @@ import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.utils.CircleTransform;
+import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
 import com.vsplc.android.poc.linkedin.utils.FontUtils;
+import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
 public class ProfileFragment extends Fragment {
 	
@@ -38,10 +41,6 @@ public class ProfileFragment extends Fragment {
 
 		mFragActivityContext = getActivity();
 		
-		// If activity recreated (such as from screen rotate), restore
-		// the previous article selection set by onSaveInstanceState().
-		// This is primarily necessary when in the two-pane layout.
-
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.profile_fragment, container, false);
 		
@@ -65,7 +64,7 @@ public class ProfileFragment extends Fragment {
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				((BaseActivity) getActivity()).showHideNevigationDrawer();
+				
 			}
 		});
 		
@@ -90,33 +89,28 @@ public class ProfileFragment extends Fragment {
 		// onStart is a good place to do this because the layout has already
 		// been applied to the fragment at this point so we can safely call the
 		// method below that sets the article text.
-
 		
-		Bundle bundle = getArguments(); 
+		LinkedinUser user = MethodUtils.getObject(mFragActivityContext);
 
-		if (bundle != null) { // Set article based on argument passed in
-			LinkedinUser user = (LinkedinUser) bundle.getSerializable("data");
-			Logger.vLog("ProfileFragment", ""+user.toString());
+		Logger.vLog("ProfileFragment", ""+user.toString());
+
+		if (user != null) {
+
+			tvProfileName.setText(user.fname+" "+user.lname);
+			tvProfileHeading.setText(user.headline);
+			tvProfileLocation.setText(user.location);
+
+			tvIndustry.setText(user.industry);
+			tvProfileURL.setText(user.profileurl);	
+
+			Picasso picasso = Picasso.with(mFragActivityContext);
+			RequestCreator creator = picasso.load(user.profilepicture);
+			creator.resize(80, 80);
+			creator.centerCrop();
+			creator.transform(new CircleTransform());
+			creator.into(ivProfileImage);
+		}
 			
-			if (user != null) {
-				
-				tvProfileName.setText(user.fname+" "+user.lname);
-				tvProfileHeading.setText(user.headline);
-				tvProfileLocation.setText(user.location);
-				
-				tvIndustry.setText(user.industry);
-				tvProfileURL.setText(user.profileurl);	
-				
-				Picasso picasso = Picasso.with(mFragActivityContext);
-				RequestCreator creator = picasso.load(user.profilepicture);
-				creator.resize(80, 80);
-				creator.centerCrop();
-				creator.transform(new CircleTransform());
-				creator.into(ivProfileImage);
-			}
-			
-		}		
-		
 		// set font to all texts on Profile Fragment..
 		RelativeLayout layout = ((RelativeLayout)getActivity().findViewById(R.id.rel_profile_fragment));
 		overrideFonts(getActivity(), layout);	
@@ -142,5 +136,6 @@ public class ProfileFragment extends Fragment {
 		} catch (Exception e) {
 		}
 	}
-
+	
+	
 }

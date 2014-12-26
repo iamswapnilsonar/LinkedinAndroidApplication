@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/dark_blue_color_code"
+    android:choiceMode="singleChoice"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/lin_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark_blue_color_code"
+        android:orientation="horizontal"
+        android:paddingBottom="10dip"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:paddingTop="10dip" >
+
+        <Button
+            android:id="@+id/btn_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:background="@drawable/btn_list_tap_effect" />
+
+        <TextView
+            android:id="@+id/tv_map_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:text="Map All"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/lin_header_second"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        android:paddingBottom="5dip"
+        android:paddingTop="5dip" >
+
+        <Button
+            android:id="@+id/btn_checkbox_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="10dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="10dip"
+            android:layout_marginTop="10dip"
+            android:background="@drawable/btn_messageall_tap_effect" />
+
+        <Button
+            android:id="@+id/btn_message_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dip"
+            android:layout_toRightOf="@id/btn_checkbox_all"
+            android:background="@drawable/btn_messageall_tap_effect" />
+
+        <Button
+            android:id="@+id/btn_map_connections"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dip"
+            android:layout_toRightOf="@id/btn_message_all"
+            android:background="@drawable/btn_mapall_tap_effect" />
+
+        <EditText
+            android:id="@+id/edt_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dip"
+            android:layout_marginRight="5dip"
+            android:layout_toRightOf="@+id/btn_map_connections"
+            android:background="@color/faint_blue_color_code"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="  Browse"
+            android:imeOptions="actionDone"
+            android:padding="5dip"
+            android:singleLine="true"
+            android:textSize="14sp" >
+        </EditText>
+    </RelativeLayout>
+
+    <!-- Listview to display slider menu -->
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/list_background"
+        android:dividerHeight="0.25dp"
+        android:listSelector="@drawable/list_selector" />
+
+</LinearLayout>

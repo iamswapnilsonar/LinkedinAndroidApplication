@@ -3,6 +3,7 @@ package com.vsplc.android.poc.linkedin.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,10 @@ public class LinkedinApplication extends Application {
 	public static Map<String, List<LinkedinUser>> mapCountrywiseConnections = new HashMap<String, List<LinkedinUser>>();
 	
 	public static int iConnectionCount = 0;
+	
 	public static ArrayList<City> listCityInfo = new ArrayList<City>();
+	
+	public static Hashtable<String, City> hashTableOfCityInfo = new Hashtable<String, City>();
 	
 	@Override
 	public void onCreate() {

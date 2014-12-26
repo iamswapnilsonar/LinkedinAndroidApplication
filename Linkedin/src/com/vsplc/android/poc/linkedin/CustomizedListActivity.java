@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vsplc.android.poc.linkedin.adapter.IndustryListAdapter;
@@ -68,6 +69,7 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 	private MarkerOptions markerOptions;
 
 	private Double lat, longi;
+	
 	private double minLatitude = Integer.MAX_VALUE;
 	private double maxLatitude = Integer.MIN_VALUE;
 	private double minLongitude = Integer.MAX_VALUE;
@@ -145,12 +147,23 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 				Logger.vLog("AyscGettingCityInfo : City ", city.name);
 
 				
-				if (city.latLng == null) {
+				/*if (city.latLng == null) {
 					
 					String address = city.name + "," + city.country;
 //					address = address.replaceAll("\\s", "%20");
 					city.latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(CustomizedListActivity.this, address);
 					
+				}else{
+					// NOP
+				}*/
+				
+				if (city.latitude.equals("NA") && city.longitude.equals("NA")) {
+					String address = city.name + "," + city.country;
+					
+					LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(CustomizedListActivity.this, address);
+					
+					city.latitude = String.valueOf(latLng.latitude);
+					city.longitude = String.valueOf(latLng.longitude);
 				}else{
 					// NOP
 				}
@@ -170,21 +183,29 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 
 				City city = LinkedinApplication.listCityInfo.get(i);
 				
+				
+				
 				try {
 
-					lat = city.latLng.latitude;
-					longi = city.latLng.latitude;
+					Double mLat = Double.parseDouble(city.latitude);
+					Double mLong = Double.parseDouble(city.longitude);
+					
+					LatLng latLng = new LatLng(mLat, mLong);
+					
+					Logger.vLog("AyscGettingCityInfo : ", "City - Latitude "+ mLat);
+					Logger.vLog("AyscGettingCityInfo : ", "City - Longitude "+ mLong);
 
-					maxLatitude = Math.max(lat, maxLatitude);
-					minLatitude = Math.min(lat, minLatitude);
-					maxLongitude = Math.max(longi, maxLongitude);
-					minLongitude = Math.min(longi, minLongitude);
+					maxLatitude = Math.max(mLat, maxLatitude);
+					minLatitude = Math.min(mLat, minLatitude);
+					maxLongitude = Math.max(mLong, maxLongitude);
+					minLongitude = Math.min(mLong, minLongitude);
 
-					markerOptions = new MarkerOptions();
-					markerOptions.position(city.latLng);
+					MarkerOptions markerOptions = new MarkerOptions();
+					markerOptions.position(latLng);
 					markerOptions.title(city.name);
 					markerOptions.snippet(city.country);
 					markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.img_pin));
+					
 					Marker marker = googleMap.addMarker(markerOptions);
 
 					Logger.vLog("DoingLengthyTask", "Marker "+ marker.getTitle().toString() + "added");
@@ -198,6 +219,10 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 			if (isGoogleMapRequested && isCitysWorkCompleted && result.equals("Completed")) {
 				
 				progressDialog.dismiss();
+				
+				Bundle bundle = new Bundle();
+				
+				String[] arr = (String[]) cities.toArray();
 				
 				if (list.getVisibility() == View.VISIBLE
 						|| industriesList.getVisibility() == View.VISIBLE 

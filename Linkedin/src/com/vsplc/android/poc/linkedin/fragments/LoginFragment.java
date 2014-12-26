@@ -16,13 +16,8 @@ package com.vsplc.android.poc.linkedin.fragments;
  * limitations under the License.
  */
 
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.vsplc.android.poc.linkedin.BaseActivity;
 import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.linkedin_api.interfaces.Callback;
@@ -48,7 +42,6 @@ import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.networking.ResponseManager;
 import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
 import com.vsplc.android.poc.linkedin.utils.FontUtils;
-import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
 public class LoginFragment extends Fragment implements OnClickListener{
@@ -59,8 +52,6 @@ public class LoginFragment extends Fragment implements OnClickListener{
 	
 	private EasyLinkedIn _EasyLinkedIn;
 	private ProgressDialog progressDialog;
-	
-	private boolean isWorkOfUserInfoCompleted = false;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -204,8 +195,6 @@ public class LoginFragment extends Fragment implements OnClickListener{
 	            LinkedinUser linkedinUser = MethodUtils.getObject(mFragActivityContext);
 				Logger.vLog("getUserDetailsDownloadObserver", linkedinUser.toString());
 				
-				isWorkOfUserInfoCompleted = true;
-				
 			} catch (Exception ex) {
 				// TODO Auto-generated catch block
 				ex.printStackTrace();
@@ -224,22 +213,24 @@ public class LoginFragment extends Fragment implements OnClickListener{
 				
 				Logger.vLog("onPostExecute", "Hello");
 				
+				((BaseActivity)mFragActivityContext).startFetchingTheConnectionsByAsyncTask();
+				
 				// Create fragment and give it an argument for the selected article
-	            ProfileFragment newFragment = (ProfileFragment) Fragment.instantiate(mFragActivityContext, 
+	            ProfileFragment profileFragment = (ProfileFragment) Fragment.instantiate(mFragActivityContext, 
 	            						ConstantUtils.PROFILE_FRAGMENT);
 	            
-	            LinkedinUser linkedinUser = MethodUtils.getObject(mFragActivityContext);
-				Logger.vLog("getUserDetailsDownloadObserver", linkedinUser.toString());
-//	            
-	            Bundle bundle = new Bundle();
-	            bundle.putSerializable("data", linkedinUser);
-	            newFragment.setArguments(bundle);
+//	            LinkedinUser linkedinUser = MethodUtils.getObject(mFragActivityContext);
+//				Logger.vLog("getUserDetailsDownloadObserver", linkedinUser.toString());
+////	            
+//	            Bundle bundle = new Bundle();
+//	            bundle.putSerializable("data", linkedinUser);
+//	            profileFragment.setArguments(bundle);
 	            
 	            FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
 
 	            // Replace whatever is in the fragment_container view with this fragment,
 	            // and add the transaction to the back stack so the user can navigate back
-	            transaction.replace(R.id.fragment_container, newFragment);
+	            transaction.replace(R.id.fragment_container, profileFragment, "profile");
 	            transaction.addToBackStack(null);
 
 	            // Commit the transaction
