@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +20,6 @@ import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.utils.CircleTransform;
-import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
 import com.vsplc.android.poc.linkedin.utils.FontUtils;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 

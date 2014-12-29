@@ -12,7 +12,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.vsplc.android.poc.linkedin.R;
-import com.vsplc.android.poc.linkedin.logger.Logger;
 
 public class IndustryListAdapter extends BaseAdapter {
     
@@ -24,13 +23,13 @@ public class IndustryListAdapter extends BaseAdapter {
     
     public IndustryListAdapter(Activity activity, List<String> data) {
         this.activity = activity;
-        this.listIndustries=data;
+        this.listIndustries = data;
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //        listIndustries = new ArrayList<String>(data);
         
-        for(String var: listIndustries){
-        	Logger.vLog("IndustryListAdapter - Constructor", ""+var);
-        }
+//        for(String var: listIndustries){
+//        	Logger.vLog("IndustryListAdapter - Constructor", ""+var);
+//        }
     }
 
     public int getCount() {
@@ -47,7 +46,7 @@ public class IndustryListAdapter extends BaseAdapter {
     
     @SuppressLint("InflateParams")
 	public View getView(int position, View convertView, ViewGroup parent) {
-        View vi=convertView;
+        View vi = convertView;
         
         if(convertView == null)
             vi = inflater.inflate(R.layout.list_industries_row, null);
@@ -59,9 +58,9 @@ public class IndustryListAdapter extends BaseAdapter {
         
 //        HashMap<String, String> song = new HashMap<String, String>();
         
-        for(String var: listIndustries){
-        	Logger.vLog("IndustryListAdapter", ""+var);
-        }
+//        for(String var: listIndustries){
+//        	Logger.vLog("IndustryListAdapter", ""+var);
+//        }
         
         // Setting all values in listview
         name.setText(listIndustries.get(position));

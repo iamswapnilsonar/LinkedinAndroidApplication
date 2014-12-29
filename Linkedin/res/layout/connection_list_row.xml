@@ -11,6 +11,7 @@
         android:layout_height="20dip"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:focusable="false"
         android:src="@drawable/ic_launcher" />
     <!-- ListRow Left sied Thumbnail image -->
 
@@ -25,6 +26,7 @@
         android:layout_marginTop="10dip"
         android:layout_toRightOf="@+id/checkbox"
         android:background="@drawable/image_bg"
+        android:focusable="false"
         android:padding="3dip" >
 
         <ImageView
@@ -49,6 +51,7 @@
             android:id="@+id/name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:text="Swapnil Sonar"
             android:textColor="@android:color/white"
             android:textSize="18sp"
@@ -61,6 +64,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dip"
+            android:focusable="false"
             android:text="Computer Software"
             android:textColor="@android:color/white"
             android:textSize="13sp" />
@@ -72,6 +76,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dip"
+            android:focusable="false"
             android:text="Pune Area, India"
             android:textColor="@android:color/white"
             android:textSize="13sp" />
@@ -87,6 +92,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
-        android:background="@drawable/btn_messageall_tap_effect" />
+        android:background="@drawable/btn_messageall_tap_effect"
+        android:focusable="false" />
 
 </RelativeLayout>

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,9 +16,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.vsplc.android.poc.linkedin.BaseActivity;
@@ -79,6 +84,40 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 		adapter = new ConnectionListAdapter(mFragActivityContext, listLinkedinUsers);
 		list.setAdapter(adapter);
 
+		// View linkedin user profile on webview..
+		list.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+//				Toast.makeText(mFragActivityContext, "Postion : "+position, Toast.LENGTH_SHORT).show();
+				
+				LinkedinUser user = listLinkedinUsers.get(position);
+				
+				Logger.vLog("ConnectionFragment ", "User Public Profile URL : "+user.profileurl);
+				
+				// Create fragment and give it an argument for the selected article
+	            LinkedinProfileFragment linkedinProfileFragment = (LinkedinProfileFragment) Fragment.instantiate(mFragActivityContext, 
+	            						ConstantUtils.LINKEDIN_PROFILE_FRAGMENT);	           
+	            
+	            Bundle bundle = new Bundle();
+	            bundle.putString("url", user.profileurl);
+	            linkedinProfileFragment.setArguments(bundle);
+	            
+	            FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
+
+	            // Replace whatever is in the fragment_container view with this fragment,
+	            // and add the transaction to the back stack so the user can navigate back
+	            transaction.replace(R.id.fragment_container, linkedinProfileFragment, "linkedinprofile");
+	            transaction.addToBackStack(null);
+
+	            // Commit the transaction
+	            transaction.commit();
+				
+			}
+		});
+		
 		btnLeft.setOnClickListener(this);
 		tvMapAll.setOnClickListener(this);
 		
@@ -195,6 +234,7 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 
 	private class AyscGettingCityInfo extends AsyncTask<Void, Integer, String> {
 
+		@SuppressLint("NewApi")
 		@Override
 		protected String doInBackground(Void... params) {
 
@@ -208,10 +248,29 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 					String address = cityObject.name + "," + cityObject.country;
 //					cityObject.latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
 
-					LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+					Geocoder geoCoder = new Geocoder(mFragActivityContext);
 					
-					cityObject.latitude = String.valueOf(latLng.latitude);
-					cityObject.longitude = String.valueOf(latLng.longitude);
+					if (Geocoder.isPresent()) {
+						
+						LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+						
+						cityObject.latitude = String.valueOf(latLng.latitude);
+						cityObject.longitude = String.valueOf(latLng.longitude);
+						
+					}else{
+						
+						LatLng latLng = MethodUtils.getLatLongFromGivenAddress(address);
+						
+						cityObject.latitude = String.valueOf(latLng.latitude);
+						cityObject.longitude = String.valueOf(latLng.longitude);
+						
+					}
+					
+					
+//					LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+//					
+//					cityObject.latitude = String.valueOf(latLng.latitude);
+//					cityObject.longitude = String.valueOf(latLng.longitude);
 					
 				}else{
 					// NOP

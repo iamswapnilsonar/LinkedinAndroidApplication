@@ -56,7 +56,14 @@ public class MethodUtils {
 			}
 
 		} catch (IOException e) { // TODO Auto-generated catch block
-			e.printStackTrace(); }
+			e.printStackTrace(); 
+			
+			LatLng latLng = MethodUtils.getLatLongFromGivenAddress(youraddress);
+			
+			latitude = latLng.latitude;
+			longitude = latLng.longitude;
+			
+		}
 
 //		Logger.vLog("getLatLngFromGivenAddressGeoCoder", "Address : "+youraddress);
 		Logger.vLog("getLatLngFromGivenAddressGeoCoder", "Address : "+youraddress+" Latitude : "+latitude+" Longitude : "+longitude);
@@ -71,7 +78,7 @@ public class MethodUtils {
 		double lat = 0;
 		double lng = 0;
 
-		String uri = "http://maps.google.com/maps/api/geocode/json?key=AIzaSyBGQ5kh-rId4MY6_W2daPvx0I1gEjDBLE4&address="
+		String uri = "http://maps.google.com/maps/api/geocode/json?address="
 				+ youraddress + "&sensor=false";
 
 		HttpGet httpGet = new HttpGet(uri);
@@ -111,6 +118,8 @@ public class MethodUtils {
 			e.printStackTrace();
 		}
 
+		Logger.vLog("getLatLongFromGivenAddress", "Address : "+youraddress+" Latitude : "+lat+" Longitude : "+lng);
+		
 		return new LatLng(lat, lng);
 
 	}

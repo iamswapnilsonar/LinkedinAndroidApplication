@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.http.SslError;
@@ -22,7 +23,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -508,6 +508,7 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 		}
 	}
 	
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -664,7 +665,7 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 		private View view;
 
 		public CustomInfoWindowAdapter() {
-			view = getLayoutInflater().inflate(R.layout.custom_balloon_overlay, null);
+			view = getLayoutInflater().inflate(R.layout.marker_infowindow_layout, null);
 		}
 
 		@Override
@@ -685,14 +686,14 @@ public class CustomizedListActivity extends FragmentActivity implements OnMarker
 			
 			CustomizedListActivity.this.marker = marker;
 			
-			final String title = marker.getTitle();
-			
-			final TextView titleUi = ((TextView) view.findViewById(R.id.balloon_item_title));
-			if (title != null) {
-				titleUi.setText(title);
-			} else {
-				titleUi.setText("");
-			}
+//			final String title = marker.getTitle();
+//			
+//			final TextView titleUi = ((TextView) view.findViewById(R.id.balloon_item_title));
+//			if (title != null) {
+//				titleUi.setText(title);
+//			} else {
+//				titleUi.setText("");
+//			}
 
 			return view;
 		}

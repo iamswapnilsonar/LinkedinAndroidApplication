@@ -15,5 +15,8 @@ public class ConstantUtils {
 	public static final String PROFILE_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.ProfileFragment";	
 	public static final String CONNECTION_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.ConnectionFragment";
 	public static final String GOOGLE_MAP_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.GoogleMapFragment";
+	public static final String LINKEDIN_PROFILE_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.LinkedinProfileFragment";
+	public static final String INDUSTRIES_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.IndustriesFragment";
+	
 	
 }

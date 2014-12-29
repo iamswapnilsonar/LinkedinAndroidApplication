@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.vsplc.android.poc.linkedin.adapter.NavDrawerListAdapter;
 import com.vsplc.android.poc.linkedin.fragments.ConnectionFragment;
+import com.vsplc.android.poc.linkedin.fragments.IndustriesFragment;
 import com.vsplc.android.poc.linkedin.fragments.LoginFragment;
 import com.vsplc.android.poc.linkedin.fragments.ProfileFragment;
 import com.vsplc.android.poc.linkedin.linkedin_api.interfaces.DownloadObserver;
@@ -223,6 +224,23 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 								// Create fragment and give it an arguments if any
 								targetFragment = (ConnectionFragment) Fragment.instantiate(mContext, ConstantUtils.CONNECTION_FRAGMENT);
 								tagFragment = "connections";
+
+							}else{
+								// Make webservice call to fetch all the connnction data
+								pDialog.setMessage("Fetching Connections..");
+								pDialog.show();
+							}
+						}else if(position == 3){
+							
+							isConnectionsRequested = true;
+
+							if (isConnectionsWorkCompleted) {
+
+								pDialog.dismiss();
+
+								// Create fragment and give it an arguments if any
+								targetFragment = (IndustriesFragment) Fragment.instantiate(mContext, ConstantUtils.INDUSTRIES_FRAGMENT);
+								tagFragment = "industries";
 
 							}else{
 								// Make webservice call to fetch all the connnction data

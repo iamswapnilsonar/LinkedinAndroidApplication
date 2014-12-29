@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
-            android:background="@drawable/btn_list_tap_effect" />
+            android:background="@drawable/btn_list_tap_effect"
+            android:focusable="false" />
 
         <TextView
             android:id="@+id/tv_map_all"
@@ -32,6 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
+            android:focusable="false"
             android:text="Map All"
             android:textColor="@android:color/white"
             android:textSize="16sp" />
@@ -56,7 +58,8 @@
             android:layout_marginLeft="5dip"
             android:layout_marginRight="10dip"
             android:layout_marginTop="10dip"
-            android:background="@drawable/btn_messageall_tap_effect" />
+            android:background="@drawable/btn_messageall_tap_effect"
+            android:focusable="false" />
 
         <Button
             android:id="@+id/btn_message_all"
@@ -65,7 +68,8 @@
             android:layout_centerVertical="true"
             android:layout_margin="10dip"
             android:layout_toRightOf="@id/btn_checkbox_all"
-            android:background="@drawable/btn_messageall_tap_effect" />
+            android:background="@drawable/btn_messageall_tap_effect"
+            android:focusable="false" />
 
         <Button
             android:id="@+id/btn_map_connections"
@@ -74,7 +78,8 @@
             android:layout_centerVertical="true"
             android:layout_margin="10dip"
             android:layout_toRightOf="@id/btn_message_all"
-            android:background="@drawable/btn_mapall_tap_effect" />
+            android:background="@drawable/btn_mapall_tap_effect"
+            android:focusable="false" />
 
         <EditText
             android:id="@+id/edt_search"
@@ -86,10 +91,8 @@
             android:layout_marginRight="5dip"
             android:layout_toRightOf="@+id/btn_map_connections"
             android:background="@color/faint_blue_color_code"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:focusable="false"
             android:hint="  Browse"
-            android:imeOptions="actionDone"
             android:padding="5dip"
             android:singleLine="true"
             android:textSize="14sp" >
@@ -102,7 +105,7 @@
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="@color/list_background"
+        android:background="@color/list_background"        
         android:dividerHeight="0.25dp"
         android:listSelector="@drawable/list_selector" />
 

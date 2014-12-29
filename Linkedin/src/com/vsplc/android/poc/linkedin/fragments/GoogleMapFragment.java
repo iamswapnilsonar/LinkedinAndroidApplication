@@ -1,6 +1,8 @@
 package com.vsplc.android.poc.linkedin.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,30 +13,30 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.internal.mc;
-import com.google.android.gms.internal.mf;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.vsplc.android.poc.linkedin.BaseActivity;
-import com.vsplc.android.poc.linkedin.CustomizedListActivity;
 import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.City;
 import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
-public class GoogleMapFragment extends Fragment implements OnClickListener{
+public class GoogleMapFragment extends Fragment implements OnClickListener, OnInfoWindowClickListener{
 	
 	private GoogleMap map;
 	private SupportMapFragment fragment;
+	private Marker marker;
 //	private MarkerOptions markerOptions;
 	
 	private Button btnLeft;
@@ -112,6 +114,7 @@ public class GoogleMapFragment extends Fragment implements OnClickListener{
 		
 		if (map == null) {
 			map = fragment.getMap();
+			map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 		}
 
 		new AyscTaskForSettingOfMarkers().execute(arrOfCities);
@@ -155,6 +158,7 @@ public class GoogleMapFragment extends Fragment implements OnClickListener{
 			return "Completed";
 		}
 
+		@SuppressLint("NewApi")
 		@Override
 		protected void onProgressUpdate(String... values) {
 			// TODO Auto-generated method stub
@@ -170,18 +174,30 @@ public class GoogleMapFragment extends Fragment implements OnClickListener{
 			if (city.latitude.equals("NA") && city.longitude.equals("NA")) {
 				String address = city.name + "," + city.country;
 				
-				LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+				Geocoder geoCoder = new Geocoder(mFragActivityContext);
 				
-				city.latitude = String.valueOf(latLng.latitude);
-				city.longitude = String.valueOf(latLng.longitude);
+				if (Geocoder.isPresent()) {
+					
+					LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+					
+					city.latitude = String.valueOf(latLng.latitude);
+					city.longitude = String.valueOf(latLng.longitude);
+					
+				}else{
+					
+					LatLng latLng = MethodUtils.getLatLongFromGivenAddress(address);
+					
+					city.latitude = String.valueOf(latLng.latitude);
+					city.longitude = String.valueOf(latLng.longitude);
+					
+				}
+				
 			}					
 			
 			if (map != null) {
 
 				try {
-					
-					
-					
+										
 					Double mLat = Double.parseDouble(city.latitude);
 					Double mLong = Double.parseDouble(city.longitude);
 					
@@ -291,4 +307,73 @@ public class GoogleMapFragment extends Fragment implements OnClickListener{
 		
 	}
 	
+	private class CustomInfoWindowAdapter implements InfoWindowAdapter {
+
+		private View view;
+
+		public CustomInfoWindowAdapter() {
+			view = mFragActivityContext.getLayoutInflater().inflate(R.layout.marker_infowindow_layout, null);
+		}
+
+		@Override
+		public View getInfoContents(Marker marker) {
+
+			if (GoogleMapFragment.this.marker != null
+					&& GoogleMapFragment.this.marker.isInfoWindowShown()) {
+				
+				GoogleMapFragment.this.marker.hideInfoWindow();
+//				CustomizedListActivity.this.marker.showInfoWindow();
+				
+			}
+			return null;
+		}
+
+		@Override
+		public View getInfoWindow(final Marker marker) {
+			
+			GoogleMapFragment.this.marker = marker;
+			
+//			final String title = marker.getTitle();
+//			
+//			final TextView titleUi = ((TextView) view.findViewById(R.id.balloon_item_title));
+//			if (title != null) {
+//				titleUi.setText(title);
+//			} else {
+//				titleUi.setText("");
+//			}
+
+			return view;
+		}
+	}
+
+
+	@Override
+	public void onInfoWindowClick(final Marker marker) {
+		// TODO Auto-generated method stub
+			
+		if (marker.isInfoWindowShown()) {
+			marker.hideInfoWindow();
+		}
+		
+		if (marker.getTitle() != null && marker.getSnippet() != null) {
+			Toast.makeText(mFragActivityContext, marker.getTitle(), Toast.LENGTH_SHORT).show();
+		}
+//			new GetCityWiseConnections().execute(marker.getTitle(), marker.getSnippet());
+			/*listLinkedinUsers.clear();
+			listLinkedinUsers = MethodUtils.getCitywiseConnections(marker.getTitle(), marker.getSnippet());
+			
+			Toast.makeText(CustomizedListActivity.this, "Connection Size : "+listLinkedinUsers.size(), Toast.LENGTH_SHORT).show();
+			
+			adapter.notifyDataSetChanged();
+			
+			if (((RelativeLayout) findViewById(R.id.rl_googlemap_view)).getVisibility() == View.VISIBLE
+					|| industriesList.getVisibility() == View.VISIBLE) {
+
+				list.setVisibility(View.VISIBLE);
+				industriesList.setVisibility(View.GONE);
+				((RelativeLayout) findViewById(R.id.rl_googlemap_view)).setVisibility(View.GONE);
+
+			}*/
+		
+	}
 }
