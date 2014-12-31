@@ -93,6 +93,7 @@
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
         android:background="@drawable/btn_messageall_tap_effect"
-        android:focusable="false" />
+        android:focusable="false"
+        android:visibility="invisible" />
 
 </RelativeLayout>

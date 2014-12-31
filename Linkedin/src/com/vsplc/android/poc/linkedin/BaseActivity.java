@@ -36,6 +36,7 @@ import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.model.NavDrawerItem;
 import com.vsplc.android.poc.linkedin.networking.ResponseManager;
 import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
+import com.vsplc.android.poc.linkedin.utils.DataWrapper;
 import com.vsplc.android.poc.linkedin.utils.FontUtils;
 import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
@@ -68,6 +69,8 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 	public boolean isConnectionsRequested = false;
 	public boolean isConnectionsWorkCompleted = false;
 	
+	private LinkedinUser linkedinUser;
+	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,11 +101,12 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 			 ProfileFragment profileFragment = (ProfileFragment) Fragment.instantiate(mContext, 
 					 				ConstantUtils.PROFILE_FRAGMENT);
 
-			 LinkedinUser linkedinUser = MethodUtils.getObject(mContext);
+			 linkedinUser = MethodUtils.getObject(mContext);
 			 Logger.vLog("BaseActivity", linkedinUser.toString());
 
 			 Bundle bundle = new Bundle();
-			 bundle.putSerializable("data", linkedinUser);
+			 bundle.putString("profile_type", "AppUser");
+			 bundle.putSerializable("user", linkedinUser);
 			 profileFragment.setArguments(bundle);
 
 			 // Replace whatever is in the fragment_container view with this fragment,
@@ -198,18 +202,14 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 							// Create fragment and give it an arguments if any
 							targetFragment = (ProfileFragment) Fragment.instantiate(mContext, ConstantUtils.PROFILE_FRAGMENT);
 
-							
-							
-//							Bundle bundle = new Bundle();
-							
-//							bundle.putSerializable("city_markers", cities);
+							Bundle bundle = new Bundle();
+							bundle.putString("profile_type", "AppUser");
 							
 //							LinkedinUser linkedinUser = MethodUtils.getObject(mContext);
-//							Logger.vLog("BaseActivity", linkedinUser.toString());
-//
-//							Bundle bundle = new Bundle();
-//							bundle.putSerializable("data", linkedinUser);
-//							targetFragment.setArguments(bundle);
+							Logger.vLog("BaseActivity", linkedinUser.toString());
+							 
+							bundle.putSerializable("user", linkedinUser);
+							targetFragment.setArguments(bundle);
 
 							tagFragment = "profile";
 							
@@ -224,6 +224,12 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 								// Create fragment and give it an arguments if any
 								targetFragment = (ConnectionFragment) Fragment.instantiate(mContext, ConstantUtils.CONNECTION_FRAGMENT);
 								tagFragment = "connections";
+								
+								Bundle bundle = new Bundle();
+								DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections);
+								bundle.putSerializable("connection_list", dataWrapper);
+								
+								targetFragment.setArguments(bundle);
 
 							}else{
 								// Make webservice call to fetch all the connnction data
@@ -317,6 +323,12 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 				// Create fragment and give it an arguments if any
 				ConnectionFragment targetFragment = (ConnectionFragment) Fragment.instantiate(mContext, ConstantUtils.CONNECTION_FRAGMENT);
+				
+				Bundle bundle = new Bundle();
+				DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections);
+				bundle.putSerializable("connection_list", dataWrapper);
+				
+				targetFragment.setArguments(bundle);
 				
 				// Replace whatever is in the fragment_container view with this fragment,
 				// and add the transaction to the back stack so the user can navigate back

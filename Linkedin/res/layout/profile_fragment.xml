@@ -22,7 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
-            android:background="@drawable/btn_list_tap_effect" />
+            android:background="@drawable/btn_list_tap_effect"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/btn_left"
@@ -99,6 +100,7 @@
             android:orientation="vertical" >
 
             <LinearLayout
+                android:id="@+id/lin_connection_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dip"
@@ -143,6 +145,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lin_skills"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dip"
@@ -187,6 +190,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lin_languages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dip"
@@ -231,6 +235,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lin_industry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dip"
@@ -275,6 +280,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lin_profile_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dip"
@@ -326,9 +332,9 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lin_summary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/lin_profile_image"
                 android:layout_marginBottom="5dip"
                 android:orientation="horizontal" >
 
@@ -370,6 +376,82 @@
                         android:textColor="@android:color/white"
                         android:textSize="18sp" />
                 </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lin_options_user_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:padding="5dip" >
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal" >
+
+                    <Button
+                        android:id="@+id/btn_seeonmap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_seeonmap_tap_effect" />
+
+                    <TextView
+                        android:id="@+id/tv_seeonmap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_seeonmap"
+                        android:text="See on Map"
+                        android:textColor="@color/dark_blue_color_code"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal" >
+
+                    <Button
+                        android:id="@+id/btn_viewprofile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_viewprofile_tap_effect" />
+
+                    <TextView
+                        android:id="@+id/tv_viewprofile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_viewprofile"
+                        android:text="View Profile"
+                        android:textColor="@color/dark_blue_color_code"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal" >
+
+                    <Button
+                        android:id="@+id/btn_sendmessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_sendmessage_tap_effect" />
+
+                    <TextView
+                        android:id="@+id/tv_sendmessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_sendmessage"
+                        android:text="Send a Message"
+                        android:textColor="@color/dark_blue_color_code"
+                        android:textSize="14sp" />
+                </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

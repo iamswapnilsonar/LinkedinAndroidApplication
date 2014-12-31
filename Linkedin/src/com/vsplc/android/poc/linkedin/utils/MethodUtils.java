@@ -228,6 +228,33 @@ public class MethodUtils {
 		return filteredConnections;
 	}
 	
+	
+	public static ArrayList<LinkedinUser> getCitywiseConnections(List<LinkedinUser> mConnections, String city, String country) {
+
+//		List<LinkedinUser> connections = LinkedinApplication.listGlobalConnections;
+		List<LinkedinUser> connections =  mConnections;
+		
+		Logger.vLog("City : ", city);
+		
+		ArrayList<LinkedinUser> filteredConnections = new ArrayList<LinkedinUser>();
+
+		for (int i = 0; i < connections.size(); i++) {
+			LinkedinUser user = connections.get(i);
+
+			if (user.location != null && user.location.contains(city)) {
+				// NOP
+				filteredConnections.add(user);
+			}
+		}
+
+//		Logger.vLog(city + "Users", "" + filteredConnections.size());
+
+//		for (LinkedinUser user : filteredConnections)
+//			Logger.vLog("Print", "Value : " + user.toString());
+		
+		return filteredConnections;
+	}
+	
 	public static void printMap(Map<String, List<LinkedinUser>> map) {
 
 		for (Entry<String, List<LinkedinUser>> entry : map.entrySet()) {

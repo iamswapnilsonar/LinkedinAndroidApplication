@@ -21,7 +21,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.vsplc.android.poc.linkedin.BaseActivity;
@@ -31,6 +30,7 @@ import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.City;
 import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
+import com.vsplc.android.poc.linkedin.utils.DataWrapper;
 import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
@@ -71,14 +71,39 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 	public void onStart() {
 		super.onStart();
 
-		listLinkedinUsers = (ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections;
-		
-		if (LinkedinApplication.hashTableOfCityInfo.size() > 0) {
+		Bundle args = getArguments(); 
+
+		if (args != null) { // load web link received through bundle
 			//NOP
-			isCitysWorkCompleted = true;
+			
+			DataWrapper dataWrapper = (DataWrapper) args.getSerializable("connection_list");
+			ArrayList<LinkedinUser> mConnections = dataWrapper.getList();
+			
+//			String city = args.getString("city");
+//			String country = args.getString("country");
+//			
+//			ArrayList<LinkedinUser> mConnections = MethodUtils.getCitywiseConnections(city, country); 
+			
+//			if (listLinkedinUsers.size() > 0) {
+//				listLinkedinUsers.clear();
+//			}
+			
+			listLinkedinUsers = mConnections;
+			
+//			adapter.notifyDataSetChanged();
+			
 		}else{
-			new AsyncTaskForCities().execute(listLinkedinUsers);
+			listLinkedinUsers = (ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections;
 		}
+				
+		new AsyncTaskForCities().execute(listLinkedinUsers);
+		
+//		if (LinkedinApplication.hashTableOfCityInfo.size() > 0) {
+//			//NOP
+//			isCitysWorkCompleted = true;
+//		}else{
+//			new AsyncTaskForCities().execute(listLinkedinUsers);
+//		}
 
 		// Getting adapter by passing xml data ArrayList
 		adapter = new ConnectionListAdapter(mFragActivityContext, listLinkedinUsers);
@@ -91,12 +116,29 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				
-//				Toast.makeText(mFragActivityContext, "Postion : "+position, Toast.LENGTH_SHORT).show();
-				
 				LinkedinUser user = listLinkedinUsers.get(position);
+				Logger.vLog("ConnectionFragment ", "User : "+user.toString());				
 				
-				Logger.vLog("ConnectionFragment ", "User Public Profile URL : "+user.profileurl);
-				
+				// Create fragment and give it an argument for the selected article
+	            ProfileFragment profileFragment = (ProfileFragment) Fragment.instantiate(mFragActivityContext, 
+	            						ConstantUtils.PROFILE_FRAGMENT);	           
+	            
+	            Bundle bundle = new Bundle();
+				bundle.putString("profile_type", "ConnectionUser");
+				bundle.putSerializable("user", user);
+				profileFragment.setArguments(bundle);
+	            
+	            FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
+
+	            // Replace whatever is in the fragment_container view with this fragment,
+	            // and add the transaction to the back stack so the user can navigate back
+	            transaction.replace(R.id.fragment_container, profileFragment, "profile");
+	            transaction.addToBackStack(null);
+
+	            // Commit the transaction
+	            transaction.commit();
+								
+				/*
 				// Create fragment and give it an argument for the selected article
 	            LinkedinProfileFragment linkedinProfileFragment = (LinkedinProfileFragment) Fragment.instantiate(mFragActivityContext, 
 	            						ConstantUtils.LINKEDIN_PROFILE_FRAGMENT);	           
@@ -114,6 +156,7 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 
 	            // Commit the transaction
 	            transaction.commit();
+	            */
 				
 			}
 		});
@@ -121,7 +164,8 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 		btnLeft.setOnClickListener(this);
 		tvMapAll.setOnClickListener(this);
 		
-		progressDialog = new ProgressDialog(mFragActivityContext);		
+		progressDialog = new ProgressDialog(mFragActivityContext);	
+		progressDialog.setCancelable(false);
 	}
 
 	@Override
@@ -148,8 +192,14 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 	            						ConstantUtils.GOOGLE_MAP_FRAGMENT);	           
 	            
 	            Bundle bundle = new Bundle();
+	            
 	            String[] mArr = cities.toArray(new String[cities.size()]);
 	            bundle.putStringArray("city_markers", mArr);
+	            bundle.putString("marker_type", "MapAll");
+	            
+	            DataWrapper dataWrapper = new DataWrapper(listLinkedinUsers);
+				bundle.putSerializable("connection_list", dataWrapper);
+	            
 	            mapFragment.setArguments(bundle);
 	            
 	            FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
@@ -178,6 +228,7 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 
 	private class AsyncTaskForCities extends AsyncTask<Object, Void, String> {
 
+		@SuppressLint("NewApi")
 		@Override
 		protected String doInBackground(Object... params) {
 			// TODO Auto-generated method stub
@@ -186,7 +237,8 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 			
 			@SuppressWarnings("unchecked")
 			ArrayList<LinkedinUser> connections = (ArrayList<LinkedinUser>) params[0];
-
+			cities.clear();
+			
 			for (int i = 0; i < connections.size(); i++) {
 
 				LinkedinUser user = connections.get(i);
@@ -198,15 +250,32 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 					// Prepared how many city connections available..
 					if (mCity != null && cities.add(mCity)) {
 
-						if (LinkedinApplication.hashTableOfCityInfo.contains(mCity)) {
+						if (LinkedinApplication.hashTableOfCityInfo.containsKey(mCity)) {
 							//NOP
 						}else{
 							
-							City city = new City(mCity);
-							String mcountry = MethodUtils.getISOCountryNameFromCC(user.country_code);
-							city.country = mcountry;
+							String mCountry = MethodUtils.getISOCountryNameFromCC(user.country_code);
+
+							String address = mCity + "," + mCountry;
+							String mLatitude, mLongitude;
 							
-//							LinkedinApplication.listCityInfo.add(city);
+							if (Geocoder.isPresent()) {
+
+								LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+
+								mLatitude = String.valueOf(latLng.latitude);
+								mLongitude = String.valueOf(latLng.longitude);
+
+							}else{
+
+								LatLng latLng = MethodUtils.getLatLongFromGivenAddress(address);
+
+								mLatitude = String.valueOf(latLng.latitude);
+								mLongitude = String.valueOf(latLng.longitude);
+							}
+
+							City city = new City(mCity, mCountry, mLatitude, mLongitude);
+
 							LinkedinApplication.hashTableOfCityInfo.put(mCity, city);
 						}
 					
@@ -225,9 +294,41 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 		protected void onPostExecute(String result) {
 			// progressDialog.dismiss();
 //			Toast.makeText(mContext, result + " in retrieval of cities.", Toast.LENGTH_SHORT).show();			
-			if (result.equals("Success")) {
-				new AyscGettingCityInfo().execute();
-			}					
+//			if (result.equals("Success")) {
+//				new AyscGettingCityInfo().execute();
+//			}
+			
+			isCitysWorkCompleted = true;
+			
+			if (isGoogleMapRequested && isCitysWorkCompleted && result.equals("Success")) {
+				
+				// fragment is ready to open..
+				progressDialog.dismiss();
+				
+				// Create fragment and give it an argument for the selected article
+	            GoogleMapFragment mapFragment = (GoogleMapFragment) Fragment.instantiate(mFragActivityContext, 
+	            						ConstantUtils.GOOGLE_MAP_FRAGMENT);	           
+
+	            Bundle bundle = new Bundle();
+	            String[] mArr = cities.toArray(new String[cities.size()]);	            
+	            bundle.putStringArray("city_markers", mArr);
+	            bundle.putString("marker_type", "MapAll");
+	            
+	            DataWrapper dataWrapper = new DataWrapper(listLinkedinUsers);
+				bundle.putSerializable("connection_list", dataWrapper);
+	            
+				mapFragment.setArguments(bundle);
+				
+	            FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
+	            
+	            // Replace whatever is in the fragment_container view with this fragment,
+	            // and add the transaction to the back stack so the user can navigate back
+	            transaction.replace(R.id.fragment_container, mapFragment, "googlemap");
+	            transaction.addToBackStack(null);
+
+	            // Commit the transaction
+	            transaction.commit();
+			}
 		}
 
 	}
@@ -241,28 +342,36 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 			for (String city : cities) {
 				
 				City cityObject = LinkedinApplication.hashTableOfCityInfo.get(city);
-				Logger.vLog("AyscGettingCityInfo : City ", cityObject.name);				
+				Logger.vLog("AyscGettingCityInfo : City ", cityObject.name+" Lat : "+cityObject.latitude+" Long : "+cityObject.longitude);				
 				
 				if (cityObject.latitude.equals("NA") && cityObject.longitude.equals("NA")) {
 
 					String address = cityObject.name + "," + cityObject.country;
 //					cityObject.latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
-
-					Geocoder geoCoder = new Geocoder(mFragActivityContext);
 					
 					if (Geocoder.isPresent()) {
 						
 						LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
 						
-						cityObject.latitude = String.valueOf(latLng.latitude);
-						cityObject.longitude = String.valueOf(latLng.longitude);
+						String lat = String.valueOf(latLng.latitude);
+						String lng = String.valueOf(latLng.longitude);
+						
+						cityObject.setLatAndLong(lat, lng);
+						
+//						cityObject.latitude = String.valueOf(latLng.latitude);
+//						cityObject.longitude = String.valueOf(latLng.longitude);
 						
 					}else{
 						
 						LatLng latLng = MethodUtils.getLatLongFromGivenAddress(address);
 						
-						cityObject.latitude = String.valueOf(latLng.latitude);
-						cityObject.longitude = String.valueOf(latLng.longitude);
+						String lat = String.valueOf(latLng.latitude);
+						String lng = String.valueOf(latLng.longitude);
+						
+						cityObject.setLatAndLong(lat, lng);
+						
+//						cityObject.latitude = String.valueOf(latLng.latitude);
+//						cityObject.longitude = String.valueOf(latLng.longitude);
 						
 					}
 					
@@ -272,10 +381,12 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 //					cityObject.latitude = String.valueOf(latLng.latitude);
 //					cityObject.longitude = String.valueOf(latLng.longitude);
 					
+					LinkedinApplication.hashTableOfCityInfo.put(cityObject.name, cityObject);
+					
 				}else{
 					// NOP
 				}
-
+				
 			}
 
 			return "Completed";
@@ -298,8 +409,13 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 	            Bundle bundle = new Bundle();
 	            String[] mArr = cities.toArray(new String[cities.size()]);
 	            bundle.putStringArray("city_markers", mArr);
-	            mapFragment.setArguments(bundle);
+	            bundle.putString("marker_type", "MapAll");
 	            
+	            DataWrapper dataWrapper = new DataWrapper(listLinkedinUsers);
+				bundle.putSerializable("connection_list", dataWrapper);
+	            
+				mapFragment.setArguments(bundle);
+				
 	            FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
 	            
 	            // Replace whatever is in the fragment_container view with this fragment,

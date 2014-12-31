@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/balloon_main_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/image"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="2dp" >
 
     <TextView
-        android:id="@+id/balloon_item_title"
+        android:id="@+id/tv_marker_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:text="Pune, India"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tv_show_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dip"
         android:text="Show Connections"
         android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        android:textSize="12sp" />
 
-</RelativeLayout>
+</LinearLayout>

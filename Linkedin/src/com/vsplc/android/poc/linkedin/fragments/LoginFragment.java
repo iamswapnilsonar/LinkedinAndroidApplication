@@ -83,7 +83,8 @@ public class LoginFragment extends Fragment implements OnClickListener{
     	
         // showing progress dialog while performing heavy tasks..
         progressDialog = new ProgressDialog(mFragActivityContext);
-
+        progressDialog.setCancelable(false);
+        
     	return view;		
 	}
 
@@ -219,12 +220,13 @@ public class LoginFragment extends Fragment implements OnClickListener{
 	            ProfileFragment profileFragment = (ProfileFragment) Fragment.instantiate(mFragActivityContext, 
 	            						ConstantUtils.PROFILE_FRAGMENT);
 	            
-//	            LinkedinUser linkedinUser = MethodUtils.getObject(mFragActivityContext);
-//				Logger.vLog("getUserDetailsDownloadObserver", linkedinUser.toString());
+	            LinkedinUser linkedinUser = MethodUtils.getObject(mFragActivityContext);
+				Logger.vLog("getUserDetailsDownloadObserver", linkedinUser.toString());
 ////	            
-//	            Bundle bundle = new Bundle();
-//	            bundle.putSerializable("data", linkedinUser);
-//	            profileFragment.setArguments(bundle);
+	            Bundle bundle = new Bundle();
+	            bundle.putString("profile_type", "AppUser");
+	            bundle.putSerializable("user", linkedinUser);	            
+	            profileFragment.setArguments(bundle);
 	            
 	            FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
 

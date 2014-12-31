@@ -1,5 +1,8 @@
 package com.vsplc.android.poc.linkedin.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.location.Geocoder;
@@ -8,6 +11,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +34,9 @@ import com.vsplc.android.poc.linkedin.BaseActivity;
 import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.City;
+import com.vsplc.android.poc.linkedin.model.LinkedinUser;
+import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
+import com.vsplc.android.poc.linkedin.utils.DataWrapper;
 import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
@@ -55,6 +63,10 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 	private ProgressDialog progressDialog;
 	
 	private String[] arrOfCities;
+	private List<LinkedinUser> mConnections = new ArrayList<LinkedinUser>();
+	
+	private String markerType;
+	private LinkedinUser linkedinUser;	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,47 +106,96 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 		// been applied to the fragment at this point so we can safely call the
 		// method below that sets the article text.
 		Bundle args = getArguments();
+		
 		if (args != null) {
-			arrOfCities = args.getStringArray("city_markers");
+			
+			markerType = args.getString("marker_type");
+			
+			if (markerType.equals("MapAll")) {
+				
+				arrOfCities = args.getStringArray("city_markers");
+				
+				DataWrapper dataWrapper = (DataWrapper) args.getSerializable("connection_list");
+				mConnections = dataWrapper.getList();
+				Logger.vLog("GoogleMapFragment", "mConnections : "+mConnections.size());	
+				
+				for (String name : arrOfCities) {
+					Logger.vLog("onStart", "City : "+name);
+				}
+				
+			}else{
+				
+				linkedinUser = (LinkedinUser) args.getSerializable("user");				
+			}
 		}
 		
 		btnLeft.setOnClickListener(this);
 		tvListAll.setOnClickListener(this);
 		
-		for (String name : arrOfCities) {
-			Logger.vLog("onStart", "City : "+name);
-		}
-		
 	}
 	
+	@SuppressLint("NewApi")
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
+		LatLng mLinkedinUserPosition = new LatLng(0.0, 0.0);
+
 		if (map == null) {
-			map = fragment.getMap();
-			map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+			map = fragment.getMap();						
 		}
 
-		new AyscTaskForSettingOfMarkers().execute(arrOfCities);
+		if (markerType.equals("MapAll")) {
 			
-		/*Marker hamburg = map.addMarker(new MarkerOptions().position(HAMBURG).title("Hamburg"));
+			// use google map for mulitple markers
+			new AyscTaskForSettingOfMarkers().execute(arrOfCities);
+			map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+			map.setOnInfoWindowClickListener(this);
+			
+		}else{			
 
-			Marker kiel = map.addMarker(new MarkerOptions()
-			.position(KIEL)
-			.title("Kiel")
-			.snippet("Kiel is cool")
-			.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)));
+			tvListAll.setVisibility(View.INVISIBLE);
+			btnLeft.setBackgroundResource(R.drawable.btn_back_tap_effect);
+			
+			// try indivisual marker
+			if (linkedinUser.location != null && linkedinUser.country_code != null) {
 
-			// Move the camera instantly to hamburg with a zoom of 15.
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(HAMBURG, 15));
+				String mCity = MethodUtils.getCityNameFromLocation(linkedinUser.location, linkedinUser.country_code);
+				String mCountry = MethodUtils.getISOCountryNameFromCC(linkedinUser.country_code);
 
-			// Zoom in, animating the camera.
-			map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);*/
-		
+				String address;
+
+				if (mCity.equals("NA"))
+					address = mCountry;
+				else
+					address = mCity + "," + mCountry;
+
+				if (Geocoder.isPresent())
+					mLinkedinUserPosition = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+				else
+					mLinkedinUserPosition = MethodUtils.getLatLongFromGivenAddress(address);
+
+
+				Marker linkedinUserMarker = map.addMarker(new MarkerOptions()
+				.position(mLinkedinUserPosition)
+				.title(linkedinUser.fname +" "+linkedinUser.lname)
+				.snippet(linkedinUser.location+", "+MethodUtils.getISOCountryNameFromCC(linkedinUser.country_code))
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.img_marker)));
+
+				// Move the camera instantly to hamburg with a zoom of 15.
+				map.moveCamera(CameraUpdateFactory.newLatLngZoom(mLinkedinUserPosition, 15));
+
+				// Zoom in, animating the camera.
+				map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+
+			}else {
+				Logger.vLog("GoogleMapFragment", "User Location not available..");
+			}
+
+		}
+
 	}
-
 	
 	private class AyscTaskForSettingOfMarkers extends AsyncTask<String[], String, String> {
 
@@ -173,8 +234,6 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 
 			if (city.latitude.equals("NA") && city.longitude.equals("NA")) {
 				String address = city.name + "," + city.country;
-				
-				Geocoder geoCoder = new Geocoder(mFragActivityContext);
 				
 				if (Geocoder.isPresent()) {
 					
@@ -281,6 +340,7 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 		protected void onPreExecute() {
 			super.onPreExecute();
 			 progressDialog = new ProgressDialog(mFragActivityContext);
+			 progressDialog.setCancelable(false);
 			 progressDialog.setMessage("GoogleMap preparing..");
 		}
 		
@@ -295,7 +355,17 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 		
 		switch (key) {
 		case R.id.btn_left:
-			((BaseActivity) getActivity()).showHideNevigationDrawer();
+			
+			if (markerType.equals("MapAll")) {
+				((BaseActivity) getActivity()).showHideNevigationDrawer();
+			}else{
+				getActivity().onBackPressed();
+			}
+			
+//			getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+//			getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
+			
+			
 			break;
 
 		case R.id.tv_show_list:
@@ -333,14 +403,13 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 			
 			GoogleMapFragment.this.marker = marker;
 			
-//			final String title = marker.getTitle();
-//			
-//			final TextView titleUi = ((TextView) view.findViewById(R.id.balloon_item_title));
-//			if (title != null) {
-//				titleUi.setText(title);
-//			} else {
-//				titleUi.setText("");
-//			}
+			final String text = marker.getTitle() +","+marker.getSnippet();
+			
+			final TextView titleUi = ((TextView) view.findViewById(R.id.tv_marker_location));
+			
+			if (text != null) {
+				titleUi.setText(text);
+			}
 
 			return view;
 		}
@@ -358,6 +427,45 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 		if (marker.getTitle() != null && marker.getSnippet() != null) {
 			Toast.makeText(mFragActivityContext, marker.getTitle(), Toast.LENGTH_SHORT).show();
 		}
+		
+		
+		FragmentTransaction transaction = mFragActivityContext.getSupportFragmentManager().beginTransaction();
+
+		// Create fragment and give it an argument for the selected article
+		ConnectionFragment connectionFragment = (ConnectionFragment) Fragment.instantiate(mFragActivityContext, 
+				ConstantUtils.CONNECTION_FRAGMENT);
+		
+		Bundle bundle = new Bundle();
+		
+//		bundle.putString("parentFragment", "");
+		
+//		String city = args.getString("city");
+//		String country = args.getString("country");
+//		
+//		ArrayList<LinkedinUser> mConnections = MethodUtils.getCitywiseConnections(city, country); 
+		
+		Logger.vLog("onInfoWindowClick","City : "+marker.getTitle());
+		Logger.vLog("onInfoWindowClick","Country : "+marker.getSnippet());
+		
+		if (mConnections.size() > 0) {
+			
+			ArrayList<LinkedinUser> mConns = MethodUtils.getCitywiseConnections(mConnections, marker.getTitle(), marker.getSnippet());
+			
+			DataWrapper dataWrapper = new DataWrapper(mConns);
+			bundle.putSerializable("connection_list", dataWrapper);
+			
+		}
+		
+		connectionFragment.setArguments(bundle);
+
+		// Replace whatever is in the fragment_container view with this fragment,
+		// and add the transaction to the back stack so the user can navigate back
+		transaction.replace(R.id.fragment_container, connectionFragment, "connections");
+		
+		transaction.addToBackStack(null);		 
+		transaction.commit();
+		
+		
 //			new GetCityWiseConnections().execute(marker.getTitle(), marker.getSnippet());
 			/*listLinkedinUsers.clear();
 			listLinkedinUsers = MethodUtils.getCitywiseConnections(marker.getTitle(), marker.getSnippet());

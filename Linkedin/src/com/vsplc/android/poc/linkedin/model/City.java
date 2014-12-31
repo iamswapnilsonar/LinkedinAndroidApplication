@@ -5,7 +5,7 @@ import java.util.List;
 public class City {
 	
 	public String name;
-	public List<LinkedinUser> connections;
+	private List<LinkedinUser> connections;
 	public String country;
 	public String latitude = "NA"; 
 	public String longitude = "NA";
@@ -20,6 +20,19 @@ public class City {
 	
 	public City getCityObject(){
 		return this;
+	}
+	
+	public City setLatAndLong(String latitude, String longitude){
+		this.latitude = latitude;
+		this.longitude = longitude;
+		return this;
+	}
+	
+	public City(String name, String country, String latitude, String longitude){
+		this.name = name;
+		this.country = country;
+		this.latitude = latitude;
+		this.longitude = longitude;
 	}
 	
 	@Override
