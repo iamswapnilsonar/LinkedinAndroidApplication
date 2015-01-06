@@ -91,11 +91,15 @@
             android:layout_marginRight="5dip"
             android:layout_toRightOf="@+id/btn_map_connections"
             android:background="@color/faint_blue_color_code"
-            android:focusable="false"
-            android:hint="  Browse"
-            android:padding="5dip"
+            android:hint="Browse Connections"
+            android:paddingBottom="5dip"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dip"
             android:singleLine="true"
-            android:textSize="14sp" >
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            android:textSize="15sp" >
         </EditText>
     </RelativeLayout>
 
@@ -105,7 +109,7 @@
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="@color/list_background"        
+        android:background="@color/list_background"
         android:dividerHeight="0.25dp"
         android:listSelector="@drawable/list_selector" />
 

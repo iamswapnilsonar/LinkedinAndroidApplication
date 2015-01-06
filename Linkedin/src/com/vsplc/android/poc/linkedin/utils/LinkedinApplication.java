@@ -46,13 +46,15 @@ public class LinkedinApplication extends Application {
 	
 	public static Hashtable<String, City> hashTableOfCityInfo = new Hashtable<String, City>();
 	
+	public static LinkedinUser linkedinUser;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		//Log.d("SpyWarnApplication", "onCreate");
 		
 		// The following line triggers the initialization of ACRA
-		ACRA.init(this);
+//		ACRA.init(this);
 		
 	}
 		

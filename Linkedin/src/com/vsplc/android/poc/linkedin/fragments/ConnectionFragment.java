@@ -1,24 +1,30 @@
 package com.vsplc.android.poc.linkedin.fragments;
 
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -26,11 +32,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.vsplc.android.poc.linkedin.BaseActivity;
 import com.vsplc.android.poc.linkedin.R;
 import com.vsplc.android.poc.linkedin.adapter.ConnectionListAdapter;
+import com.vsplc.android.poc.linkedin.adapter.ConnectionListAdapter.ConnectionFilter;
 import com.vsplc.android.poc.linkedin.logger.Logger;
 import com.vsplc.android.poc.linkedin.model.City;
 import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
 import com.vsplc.android.poc.linkedin.utils.DataWrapper;
+import com.vsplc.android.poc.linkedin.utils.FontUtils;
 import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
@@ -44,8 +52,9 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 	
 	private Button btnLeft;
 	private TextView tvMapAll;
+	private EditText editSearch;
 	
-	private static Set<String> cities = new HashSet<String>();
+	public static Set<String> cities = new HashSet<String>();
 	private boolean isCitysWorkCompleted = false;
 	private boolean isGoogleMapRequested = false;
 	
@@ -63,6 +72,8 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 		list = (ListView) view.findViewById(R.id.list);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		tvMapAll = (TextView) view.findViewById(R.id.tv_map_all);
+		
+		editSearch = (EditText) view.findViewById(R.id.edt_search); 
 		
 		return view;
 	}
@@ -106,7 +117,7 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 //		}
 
 		// Getting adapter by passing xml data ArrayList
-		adapter = new ConnectionListAdapter(mFragActivityContext, listLinkedinUsers);
+		adapter = new ConnectionListAdapter(this, mFragActivityContext, listLinkedinUsers);
 		list.setAdapter(adapter);
 
 		// View linkedin user profile on webview..
@@ -116,7 +127,10 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				
-				LinkedinUser user = listLinkedinUsers.get(position);
+				hideKeyboardAndClearSearchText();				
+														
+				LinkedinUser user = (LinkedinUser) adapter.getItem(position);
+				Logger.vLog("ConnectionFragment ", "Size : "+adapter.data.size());
 				Logger.vLog("ConnectionFragment ", "User : "+user.toString());				
 				
 				// Create fragment and give it an argument for the selected article
@@ -166,8 +180,50 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 		
 		progressDialog = new ProgressDialog(mFragActivityContext);	
 		progressDialog.setCancelable(false);
+		
+		list.setTextFilterEnabled(true);
+                 
+		editSearch.setTypeface(FontUtils.getLatoRegularTypeface(mFragActivityContext));
+        editSearch.addTextChangedListener(new TextWatcher() {
+        
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					System.out.println("Text ["+s+"] - Start ["+start+"] - Before ["+before+"] - Count ["+count+"]");
+					
+					if (count < before) {
+						// We're deleting char so we need to reset the adapter data
+						adapter.resetData();
+					}
+						
+					adapter.getFilter().filter(s.toString());
+					
+				}
+				
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {
+					
+				}
+				
+				@Override
+				public void afterTextChanged(Editable s) {
+				}
+			});
 	}
 
+	public void hideKeyboardAndClearSearchText() {   
+	    
+		editSearch.clearFocus();
+		editSearch.setText("");
+		
+		// Check if no view has focus:			
+	    View view = mFragActivityContext.getCurrentFocus();
+	    if (view != null) {
+	        InputMethodManager inputManager = (InputMethodManager) mFragActivityContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+	        inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	    }
+	}
+	
 	@Override
 	public void onClick(View view) {
 		// TODO Auto-generated method stub
@@ -187,6 +243,8 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 			if (isCitysWorkCompleted) {
 				// fragment is ready to open..
 				
+				hideKeyboardAndClearSearchText();
+				
 				// Create fragment and give it an argument for the selected article
 	            GoogleMapFragment mapFragment = (GoogleMapFragment) Fragment.instantiate(mFragActivityContext, 
 	            						ConstantUtils.GOOGLE_MAP_FRAGMENT);	           
@@ -196,6 +254,7 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 	            String[] mArr = cities.toArray(new String[cities.size()]);
 	            bundle.putStringArray("city_markers", mArr);
 	            bundle.putString("marker_type", "MapAll");
+	            bundle.putString("callingFrom","ConnectionFragment");
 	            
 	            DataWrapper dataWrapper = new DataWrapper(listLinkedinUsers);
 				bundle.putSerializable("connection_list", dataWrapper);
@@ -302,6 +361,8 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 			
 			if (isGoogleMapRequested && isCitysWorkCompleted && result.equals("Success")) {
 				
+				hideKeyboardAndClearSearchText();
+				
 				// fragment is ready to open..
 				progressDialog.dismiss();
 				
@@ -313,6 +374,7 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 	            String[] mArr = cities.toArray(new String[cities.size()]);	            
 	            bundle.putStringArray("city_markers", mArr);
 	            bundle.putString("marker_type", "MapAll");
+	            bundle.putString("callingFrom","ConnectionFragment");
 	            
 	            DataWrapper dataWrapper = new DataWrapper(listLinkedinUsers);
 				bundle.putSerializable("connection_list", dataWrapper);
@@ -399,6 +461,8 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 			
 			if (isGoogleMapRequested && isCitysWorkCompleted && result.equals("Completed")) {
 				
+				hideKeyboardAndClearSearchText();
+				
 				// fragment is ready to open..
 				progressDialog.dismiss();
 				
@@ -410,6 +474,7 @@ public class ConnectionFragment extends Fragment implements OnClickListener{
 	            String[] mArr = cities.toArray(new String[cities.size()]);
 	            bundle.putStringArray("city_markers", mArr);
 	            bundle.putString("marker_type", "MapAll");
+	            bundle.putString("callingFrom","ConnectionFragment");
 	            
 	            DataWrapper dataWrapper = new DataWrapper(listLinkedinUsers);
 				bundle.putSerializable("connection_list", dataWrapper);

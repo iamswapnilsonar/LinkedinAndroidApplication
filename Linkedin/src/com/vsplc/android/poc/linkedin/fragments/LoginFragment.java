@@ -42,6 +42,7 @@ import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.networking.ResponseManager;
 import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
 import com.vsplc.android.poc.linkedin.utils.FontUtils;
+import com.vsplc.android.poc.linkedin.utils.LinkedinApplication;
 import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
 public class LoginFragment extends Fragment implements OnClickListener{
@@ -193,8 +194,8 @@ public class LoginFragment extends Fragment implements OnClickListener{
 				
 				MethodUtils.saveObject(mFragActivityContext, user);	
 				
-	            LinkedinUser linkedinUser = MethodUtils.getObject(mFragActivityContext);
-				Logger.vLog("getUserDetailsDownloadObserver", linkedinUser.toString());
+	            LinkedinApplication.linkedinUser = MethodUtils.getObject(mFragActivityContext);
+				Logger.vLog("getUserDetailsDownloadObserver", LinkedinApplication.linkedinUser.toString());
 				
 			} catch (Exception ex) {
 				// TODO Auto-generated catch block

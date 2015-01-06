@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,15 +24,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.vsplc.android.poc.linkedin.adapter.NavDrawerListAdapter;
 import com.vsplc.android.poc.linkedin.fragments.ConnectionFragment;
+import com.vsplc.android.poc.linkedin.fragments.GoogleMapFragment;
 import com.vsplc.android.poc.linkedin.fragments.IndustriesFragment;
 import com.vsplc.android.poc.linkedin.fragments.LoginFragment;
+import com.vsplc.android.poc.linkedin.fragments.MessageFragment;
 import com.vsplc.android.poc.linkedin.fragments.ProfileFragment;
 import com.vsplc.android.poc.linkedin.linkedin_api.interfaces.DownloadObserver;
 import com.vsplc.android.poc.linkedin.linkedin_api.model.EasyLinkedIn;
 import com.vsplc.android.poc.linkedin.linkedin_api.utils.Config;
 import com.vsplc.android.poc.linkedin.logger.Logger;
+import com.vsplc.android.poc.linkedin.model.City;
 import com.vsplc.android.poc.linkedin.model.LinkedinUser;
 import com.vsplc.android.poc.linkedin.model.NavDrawerItem;
 import com.vsplc.android.poc.linkedin.networking.ResponseManager;
@@ -66,10 +71,13 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 	
 	ArrayList<LinkedinUser> listLinkedinUsers;
 	private ProgressDialog pDialog;
-	public boolean isConnectionsRequested = false;
-	public boolean isConnectionsWorkCompleted = false;
+		
+	private boolean isConnectionsWorkCompleted = false;
 	
-	private LinkedinUser linkedinUser;
+	private boolean isConnectionsRequested = false;
+	private boolean isGoogleMapRequested = false;
+	private boolean isIndustriesListRequested = false;
+	private boolean isSendMessageRequested = false;
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -101,12 +109,12 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 			 ProfileFragment profileFragment = (ProfileFragment) Fragment.instantiate(mContext, 
 					 				ConstantUtils.PROFILE_FRAGMENT);
 
-			 linkedinUser = MethodUtils.getObject(mContext);
-			 Logger.vLog("BaseActivity", linkedinUser.toString());
+			 LinkedinApplication.linkedinUser = MethodUtils.getObject(mContext);
+			 Logger.vLog("BaseActivity", LinkedinApplication.linkedinUser.toString());
 
 			 Bundle bundle = new Bundle();
 			 bundle.putString("profile_type", "AppUser");
-			 bundle.putSerializable("user", linkedinUser);
+			 bundle.putSerializable("user", LinkedinApplication.linkedinUser);
 			 profileFragment.setArguments(bundle);
 
 			 // Replace whatever is in the fragment_container view with this fragment,
@@ -169,7 +177,7 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 
-			try{
+//			try{
 
 				String listItemTAG = navDrawerItems.get(position).getTag();
 				Logger.vLog("SlideMenuClickListener - NAV ", listItemTAG);
@@ -205,10 +213,10 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 							Bundle bundle = new Bundle();
 							bundle.putString("profile_type", "AppUser");
 							
-//							LinkedinUser linkedinUser = MethodUtils.getObject(mContext);
-							Logger.vLog("BaseActivity", linkedinUser.toString());
+//							LinkedinUser user = MethodUtils.getObject(mContext);
+							Logger.vLog("BaseActivity", LinkedinApplication.linkedinUser.toString());
 							 
-							bundle.putSerializable("user", linkedinUser);
+							bundle.putSerializable("user", LinkedinApplication.linkedinUser);
 							targetFragment.setArguments(bundle);
 
 							tagFragment = "profile";
@@ -217,8 +225,12 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 							
 							isConnectionsRequested = true;
 
+							Logger.vLog("Nav Drawer : ", "isConnectionsRequested : "+isConnectionsRequested);
+							Logger.vLog("Nav Drawer : ", "isConnectionsWorkCompleted : "+isConnectionsWorkCompleted);
+							
 							if (isConnectionsWorkCompleted) {
 
+								Logger.vLog("Nav Drawer : ", "Progress Dialog : "+pDialog);
 								pDialog.dismiss();
 
 								// Create fragment and give it an arguments if any
@@ -232,13 +244,52 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 								targetFragment.setArguments(bundle);
 
 							}else{
+								
+//								Logger.vLog("BaseActivity", pDialog);
+								
+								if (pDialog != null) {
+									
+									// Make webservice call to fetch all the connnction data
+									pDialog.setMessage("Fetching Connections..");
+									pDialog.show();
+									
+								}else{
+									Logger.vLog("BaseActivity", "pDialog value is null");
+								}
+
+							}
+						}else if (position == 2){
+							
+							isGoogleMapRequested = true;
+
+							if (isConnectionsWorkCompleted) {
+
+								pDialog.dismiss();
+
+								// Create fragment and give it an arguments if any
+								targetFragment = (GoogleMapFragment) Fragment.instantiate(BaseActivity.this, ConstantUtils.GOOGLE_MAP_FRAGMENT);
+								tagFragment = "googlemap";
+								
+					            Bundle bundle = new Bundle();
+					            String[] mArr = ConnectionFragment.cities.toArray(new String[ConnectionFragment.cities.size()]);	            
+					            bundle.putStringArray("city_markers", mArr);
+					            bundle.putString("marker_type", "MapAll");
+					            bundle.putString("callingFrom","NavigationDrawer");
+					            
+					            DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections);
+								bundle.putSerializable("connection_list", dataWrapper);
+								
+								targetFragment.setArguments(bundle);
+
+							}else{
 								// Make webservice call to fetch all the connnction data
-								pDialog.setMessage("Fetching Connections..");
+								pDialog.setMessage("Preparing Google Map..");
 								pDialog.show();
 							}
+							
 						}else if(position == 3){
 							
-							isConnectionsRequested = true;
+							isIndustriesListRequested = true;
 
 							if (isConnectionsWorkCompleted) {
 
@@ -253,6 +304,28 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 								pDialog.setMessage("Fetching Connections..");
 								pDialog.show();
 							}
+						}else if(position == 4){
+							
+							isSendMessageRequested = true;
+
+							if (isConnectionsWorkCompleted) {
+
+								pDialog.dismiss();
+
+								// Create fragment and give it an arguments if any
+								targetFragment = (MessageFragment) Fragment.instantiate(mContext, ConstantUtils.MESSAGE_FRAGMENT);								
+								tagFragment = "message";
+								
+					            Bundle bundle = new Bundle();
+					            bundle.putString("callingFrom","NavigationDrawer");					         							
+								targetFragment.setArguments(bundle);
+
+							}else{
+								// Make webservice call to fetch all the connnction data
+								pDialog.setMessage("Fetching Connections..");
+								pDialog.show();
+							}
+							
 						}
 						
 					}else{
@@ -261,21 +334,27 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 						tagFragment = "login";
 					}
 
-					// Replace whatever is in the fragment_container view with this fragment,
-					// and add the transaction to the back stack so the user can navigate back
-					transaction.replace(R.id.fragment_container, targetFragment, tagFragment);
+					
+					Logger.vLog("BaseActivity", "targetFragment : "+targetFragment+"tagFragment : "+tagFragment);
+					
+					if (targetFragment != null && tagFragment != null) {
+						
+						// Replace whatever is in the fragment_container view with this fragment,
+						// and add the transaction to the back stack so the user can navigate back
+						transaction.replace(R.id.fragment_container, targetFragment, tagFragment);
 
-					transaction.addToBackStack(null);		 
-					transaction.commit();
+						transaction.addToBackStack(null);		 
+						transaction.commit();
+						
+					}
 
 				}
-
-
-
-			}catch (Exception ex) {
-				// TODO: handle exception
-				Toast.makeText(mContext, "Unable to Open..", Toast.LENGTH_SHORT).show();
-			}
+				
+//			}catch (Exception ex) {
+//				// TODO: handle exception
+//				Logger.vLog("Nav-Drawer", ex.toString());
+//				Toast.makeText(mContext, "Unable to Open..", Toast.LENGTH_SHORT).show();
+//			}
 		}
 	}
 
@@ -438,7 +517,10 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 			
 			Logger.vLog("DoingLengthyTask","onPostExecute");	
 			
-			isConnectionsWorkCompleted = true;
+			new AsyncTaskForCities().execute(LinkedinApplication.listGlobalConnections);
+			
+//			isConnectionsWorkCompleted = true;
+			
 			/*if (progressDialog.isShowing()) {
 				progressDialog.dismiss();
 				Logger.vLog("onPostExecute : ", "listLinkedinUsers : "+listLinkedinUsers.size());
@@ -457,6 +539,180 @@ public class BaseActivity extends FragmentActivity implements View.OnClickListen
 		protected void onProgressUpdate(Void... values) {}
 	}
     
+	private class AsyncTaskForCities extends AsyncTask<Object, Void, String> {
+
+		@SuppressLint("NewApi")
+		@Override
+		protected String doInBackground(Object... params) {
+			// TODO Auto-generated method stub
+
+			Logger.vLog("LinkedinApplication.listCityInfo : ", "Size : "+LinkedinApplication.hashTableOfCityInfo.size());
+			
+			@SuppressWarnings("unchecked")
+			ArrayList<LinkedinUser> connections = (ArrayList<LinkedinUser>) params[0];
+			ConnectionFragment.cities.clear();
+			
+			for (int i = 0; i < connections.size(); i++) {
+
+				LinkedinUser user = connections.get(i);
+
+				if (user.location != null && user.country_code != null) {
+
+					String mCity = MethodUtils.getCityNameFromLocation(user.location, user.country_code);
+
+					// Prepared how many city connections available..
+					if (mCity != null && ConnectionFragment.cities.add(mCity)) {
+
+						if (LinkedinApplication.hashTableOfCityInfo.containsKey(mCity)) {
+							//NOP
+						}else{
+							
+							String mCountry = MethodUtils.getISOCountryNameFromCC(user.country_code);
+
+							String address = mCity + "," + mCountry;
+							String mLatitude, mLongitude;
+							
+							if (Geocoder.isPresent()) {
+
+								LatLng latLng = MethodUtils.getLatLngFromGivenAddressGeoCoder(BaseActivity.this, address);
+
+								mLatitude = String.valueOf(latLng.latitude);
+								mLongitude = String.valueOf(latLng.longitude);
+
+							}else{
+
+								LatLng latLng = MethodUtils.getLatLongFromGivenAddress(address);
+
+								mLatitude = String.valueOf(latLng.latitude);
+								mLongitude = String.valueOf(latLng.longitude);
+							}
+
+							City city = new City(mCity, mCountry, mLatitude, mLongitude);
+
+							LinkedinApplication.hashTableOfCityInfo.put(mCity, city);
+						}
+					
+					} else {
+						Logger.vLog("hashTableOfCityInfo", mCity + " already present.");
+					}
+
+				}
+
+			}
+
+			return "Success";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// progressDialog.dismiss();
+//			Toast.makeText(mContext, result + " in retrieval of cities.", Toast.LENGTH_SHORT).show();			
+//			if (result.equals("Success")) {
+//				new AyscGettingCityInfo().execute();
+//			}
+			
+			isConnectionsWorkCompleted = true;
+			
+//			isCitysWorkCompleted = true;
+			
+			if (isGoogleMapRequested && isConnectionsWorkCompleted && result.equals("Success")) {
+				
+				// fragment is ready to open..
+				pDialog.dismiss();
+				
+				// Create fragment and give it an argument for the selected article
+	            GoogleMapFragment mapFragment = (GoogleMapFragment) Fragment.instantiate(BaseActivity.this, 
+	            						ConstantUtils.GOOGLE_MAP_FRAGMENT);	           
+
+	            Bundle bundle = new Bundle();
+	            String[] mArr = ConnectionFragment.cities.toArray(new String[ConnectionFragment.cities.size()]);	            
+	            bundle.putStringArray("city_markers", mArr);
+	            bundle.putString("marker_type", "MapAll");
+	            bundle.putString("callingFrom","NavigationDrawer");
+	            
+	            DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections);
+				bundle.putSerializable("connection_list", dataWrapper);
+	            
+				mapFragment.setArguments(bundle);
+				
+	            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+	            
+	            // Replace whatever is in the fragment_container view with this fragment,
+	            // and add the transaction to the back stack so the user can navigate back
+	            transaction.replace(R.id.fragment_container, mapFragment, "googlemap");
+	            transaction.addToBackStack(null);
+
+	            // Commit the transaction
+	            transaction.commit();
+	            
+			}else if(isConnectionsRequested && isConnectionsWorkCompleted && result.equals("Success")){
+				
+				// fragment is ready to open..
+				pDialog.dismiss();
+				
+				// Create fragment and give it an arguments if any
+				ConnectionFragment targetFragment = (ConnectionFragment) Fragment.instantiate(mContext, ConstantUtils.CONNECTION_FRAGMENT);
+//				tagFragment = "connections";
+				
+				Bundle bundle = new Bundle();
+				DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)LinkedinApplication.listGlobalConnections);
+				bundle.putSerializable("connection_list", dataWrapper);
+				
+				targetFragment.setArguments(bundle);
+				
+	            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+	            
+	            // Replace whatever is in the fragment_container view with this fragment,
+	            // and add the transaction to the back stack so the user can navigate back
+	            transaction.replace(R.id.fragment_container, targetFragment, "connections");
+	            transaction.addToBackStack(null);
+
+	            // Commit the transaction
+	            transaction.commit();
+				
+			}else if(isIndustriesListRequested && isConnectionsWorkCompleted && result.equals("Success")){
+				
+				// fragment is ready to open..
+				pDialog.dismiss();
+				
+				// Create fragment and give it an arguments if any
+				IndustriesFragment targetFragment = (IndustriesFragment) Fragment.instantiate(mContext, ConstantUtils.INDUSTRIES_FRAGMENT);
+	            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+	            
+	            // Replace whatever is in the fragment_container view with this fragment,
+	            // and add the transaction to the back stack so the user can navigate back
+	            transaction.replace(R.id.fragment_container, targetFragment, "industries");
+	            transaction.addToBackStack(null);
+
+	            // Commit the transaction
+	            transaction.commit();
+			}else if(isSendMessageRequested && isConnectionsWorkCompleted && result.equals("Success")){
+				
+				// fragment is ready to open..
+				pDialog.dismiss();
+				
+				// Create fragment and give it an arguments if any
+				MessageFragment targetFragment = (MessageFragment) Fragment.instantiate(mContext, ConstantUtils.MESSAGE_FRAGMENT);								
+				
+	            Bundle bundle = new Bundle();
+	            bundle.putString("callingFrom","NavigationDrawer");					         							
+				targetFragment.setArguments(bundle);
+				
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+	            
+	            // Replace whatever is in the fragment_container view with this fragment,
+	            // and add the transaction to the back stack so the user can navigate back
+	            transaction.replace(R.id.fragment_container, targetFragment, "message");
+	            transaction.addToBackStack(null);
+
+	            // Commit the transaction
+	            transaction.commit();
+				
+			}
+		}
+
+	}
+	
 	@Override
 	public void onClick(View view) {
 		// TODO Auto-generated method stub

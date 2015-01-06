@@ -67,6 +67,9 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 	
 	private String markerType;
 	private LinkedinUser linkedinUser;	
+	private LatLng mLinkedinUserPosition = new LatLng(0.0, 0.0);
+	
+	private String callerFragment;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,6 +118,7 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 				
 				arrOfCities = args.getStringArray("city_markers");
 				
+				
 				DataWrapper dataWrapper = (DataWrapper) args.getSerializable("connection_list");
 				mConnections = dataWrapper.getList();
 				Logger.vLog("GoogleMapFragment", "mConnections : "+mConnections.size());	
@@ -122,6 +126,14 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 				for (String name : arrOfCities) {
 					Logger.vLog("onStart", "City : "+name);
 				}
+				
+				callerFragment = args.getString("callingFrom");
+				
+				if (callerFragment.equals("NavigationDrawer")) {
+					tvListAll.setVisibility(View.INVISIBLE);
+				}else{
+					// NOP
+				}							
 				
 			}else{
 				
@@ -140,7 +152,7 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 		// TODO Auto-generated method stub
 		super.onResume();
 
-		LatLng mLinkedinUserPosition = new LatLng(0.0, 0.0);
+//		LatLng mLinkedinUserPosition = new LatLng(0.0, 0.0);
 
 		if (map == null) {
 			map = fragment.getMap();						
@@ -158,7 +170,9 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 			tvListAll.setVisibility(View.INVISIBLE);
 			btnLeft.setBackgroundResource(R.drawable.btn_back_tap_effect);
 			
-			// try indivisual marker
+			new AsyncTaskForShowingSingleMarker().execute(linkedinUser);
+			
+			/*// try indivisual marker
 			if (linkedinUser.location != null && linkedinUser.country_code != null) {
 
 				String mCity = MethodUtils.getCityNameFromLocation(linkedinUser.location, linkedinUser.country_code);
@@ -191,10 +205,73 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 
 			}else {
 				Logger.vLog("GoogleMapFragment", "User Location not available..");
-			}
+			}*/
 
 		}
 
+	}
+	
+	private class AsyncTaskForShowingSingleMarker extends AsyncTask<Object, Void, String>{
+
+		@SuppressLint("NewApi")
+		@Override
+		protected String doInBackground(Object... params) {
+			// TODO Auto-generated method stub
+			
+			String result;
+			
+			linkedinUser = (LinkedinUser) params[0];
+			
+			// try indivisual marker
+			if (linkedinUser.location != null && linkedinUser.country_code != null) {
+
+				String mCity = MethodUtils.getCityNameFromLocation(linkedinUser.location, linkedinUser.country_code);
+				String mCountry = MethodUtils.getISOCountryNameFromCC(linkedinUser.country_code);
+
+				String address;
+
+				if (mCity.equals("NA"))
+					address = mCountry;
+				else
+					address = mCity + "," + mCountry;
+
+				if (Geocoder.isPresent())
+					mLinkedinUserPosition = MethodUtils.getLatLngFromGivenAddressGeoCoder(mFragActivityContext, address);
+				else
+					mLinkedinUserPosition = MethodUtils.getLatLongFromGivenAddress(address);
+
+				result = "Success";
+			}else{
+				result = "Failure";
+			}
+			
+			return result;
+		}
+		
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+
+			if (result.equals("Success") && map != null) {
+
+				Marker linkedinUserMarker = map.addMarker(new MarkerOptions()
+				.position(mLinkedinUserPosition)
+				.title(linkedinUser.fname +" "+linkedinUser.lname)
+				.snippet(linkedinUser.location+", "+MethodUtils.getISOCountryNameFromCC(linkedinUser.country_code))
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.img_marker)));
+
+				// Move the camera instantly to hamburg with a zoom of 15.
+				map.moveCamera(CameraUpdateFactory.newLatLngZoom(mLinkedinUserPosition, 15));
+
+				// Zoom in, animating the camera.
+				map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+
+			}else{
+				Toast.makeText(mFragActivityContext, "Failed in getting geo-cordinates.", Toast.LENGTH_SHORT).show();
+			}
+		}
+		
 	}
 	
 	private class AyscTaskForSettingOfMarkers extends AsyncTask<String[], String, String> {
@@ -369,6 +446,7 @@ public class GoogleMapFragment extends Fragment implements OnClickListener, OnIn
 			break;
 
 		case R.id.tv_show_list:
+			getActivity().onBackPressed();
 			break;
 			
 		default:

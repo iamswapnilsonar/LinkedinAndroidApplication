@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
-            android:background="@drawable/btn_list_tap_effect" />
+            android:background="@drawable/btn_back_tap_effect" />
     </RelativeLayout>
 
     <LinearLayout
@@ -336,7 +336,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dip"
-                android:orientation="horizontal" >
+                android:orientation="horizontal"
+                android:visibility="visible" >
 
                 <FrameLayout
                     android:layout_width="0dip"
@@ -397,6 +398,7 @@
                         android:id="@+id/btn_seeonmap"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:background="@drawable/btn_seeonmap_tap_effect" />
 
                     <TextView
@@ -404,6 +406,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/btn_seeonmap"
+                        android:layout_centerHorizontal="true"
                         android:text="See on Map"
                         android:textColor="@color/dark_blue_color_code"
                         android:textSize="14sp" />
@@ -419,6 +422,7 @@
                         android:id="@+id/btn_viewprofile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:background="@drawable/btn_viewprofile_tap_effect" />
 
                     <TextView
@@ -426,6 +430,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/btn_viewprofile"
+                        android:layout_centerHorizontal="true"
                         android:text="View Profile"
                         android:textColor="@color/dark_blue_color_code"
                         android:textSize="14sp" />
@@ -441,6 +446,7 @@
                         android:id="@+id/btn_sendmessage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:background="@drawable/btn_sendmessage_tap_effect" />
 
                     <TextView
@@ -448,6 +454,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/btn_sendmessage"
+                        android:layout_centerHorizontal="true"
                         android:text="Send a Message"
                         android:textColor="@color/dark_blue_color_code"
                         android:textSize="14sp" />

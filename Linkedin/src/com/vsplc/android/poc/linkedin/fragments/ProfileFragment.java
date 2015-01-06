@@ -1,5 +1,8 @@
 package com.vsplc.android.poc.linkedin.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -26,7 +28,6 @@ import com.vsplc.android.poc.linkedin.utils.CircleTransform;
 import com.vsplc.android.poc.linkedin.utils.ConstantUtils;
 import com.vsplc.android.poc.linkedin.utils.DataWrapper;
 import com.vsplc.android.poc.linkedin.utils.FontUtils;
-import com.vsplc.android.poc.linkedin.utils.MethodUtils;
 
 public class ProfileFragment extends Fragment implements OnClickListener{
 	
@@ -39,6 +40,8 @@ public class ProfileFragment extends Fragment implements OnClickListener{
 	private Button btnSeeOnMap, btnViewProfile, btnSendMessage;
 	private TextView tvSeeOnMap, tvViewProfile, tvSendMessage;
 	
+	private Button btnLeft;
+	private String profileType;
 	private FragmentActivity mFragActivityContext;
 		
 	private LinkedinUser user;
@@ -80,37 +83,13 @@ public class ProfileFragment extends Fragment implements OnClickListener{
 		
 		tvProfileURL.setSelected(true);
 				
-		Button btnRight = (Button) view.findViewById(R.id.btn_right);
-		btnRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View view) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
-		Button btnLeft = (Button) view.findViewById(R.id.btn_left);
-		btnLeft.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View view) {
-				// TODO Auto-generated method stub
-				((BaseActivity) getActivity()).showHideNevigationDrawer();
-			}
-		});
-		
+		btnLeft = (Button) view.findViewById(R.id.btn_left);				
 		return view;
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-
-		// During startup, check if there are arguments passed to the fragment.
-		// onStart is a good place to do this because the layout has already
-		// been applied to the fragment at this point so we can safely call the
-		// method below that sets the article text.
 		
 		// set font to all texts on Profile Fragment..
 		RelativeLayout layout = ((RelativeLayout)getActivity().findViewById(R.id.rel_profile_fragment));
@@ -123,7 +102,7 @@ public class ProfileFragment extends Fragment implements OnClickListener{
 
 		if (args != null) { 
 			
-			String profileType = args.getString("profile_type");
+			profileType = args.getString("profile_type");
 			
 			if (profileType.equals("AppUser")) {
 				
@@ -148,6 +127,8 @@ public class ProfileFragment extends Fragment implements OnClickListener{
 					
 					linearLayout.setVisibility(View.GONE);
 				}
+
+				btnLeft.setBackgroundResource(R.drawable.btn_list_tap_effect);
 				
 			}else{
 				
@@ -185,8 +166,25 @@ public class ProfileFragment extends Fragment implements OnClickListener{
 //					relativeLayout.setVisibility(View.GONE);
 				}
 				
+				btnLeft.setBackgroundResource(R.drawable.btn_back_tap_effect);
+				
 			}
 		}
+		
+		btnLeft.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View view) {
+				// TODO Auto-generated method stub
+				
+				if (profileType.equals("AppUser")) {
+					((BaseActivity) getActivity()).showHideNevigationDrawer();
+				}else{
+					getActivity().onBackPressed();
+				}
+				
+			}
+		});
 
 	}
 
@@ -239,11 +237,57 @@ public class ProfileFragment extends Fragment implements OnClickListener{
 			break;
 
 		case R.id.btn_viewprofile:		
-			Toast.makeText(mFragActivityContext, "View Profile", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(mFragActivityContext, "View Profile", Toast.LENGTH_SHORT).show();
+			
+			// Create fragment and give it an argument for the selected article
+            LinkedinProfileFragment linkedinProfileFragment = (LinkedinProfileFragment) Fragment.instantiate(mFragActivityContext, 
+            						ConstantUtils.LINKEDIN_PROFILE_FRAGMENT);	           
+            
+            Bundle bundle2 = new Bundle();
+            bundle2.putString("url", user.profileurl);
+            linkedinProfileFragment.setArguments(bundle2);
+            
+            FragmentTransaction transaction2 = mFragActivityContext.getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack so the user can navigate back
+            transaction2.replace(R.id.fragment_container, linkedinProfileFragment, "linkedinprofile");
+            transaction2.addToBackStack(null);
+
+            // Commit the transaction
+            transaction2.commit();
+			
 			break;
 			
 		case R.id.btn_sendmessage:			
-			Toast.makeText(mFragActivityContext, "Send Message", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(mFragActivityContext, "Send Message", Toast.LENGTH_SHORT).show();
+			
+			List<LinkedinUser> listRecipients  = new ArrayList<LinkedinUser>();
+ 			listRecipients.add(user);
+ 			
+//			new LongOperationForSendMessage().execute(listRecipients);
+						
+			// Create fragment and give it an argument for the selected article
+            MessageFragment messageFragment = (MessageFragment) Fragment.instantiate(mFragActivityContext, 
+            						ConstantUtils.MESSAGE_FRAGMENT);	           
+
+            Bundle bundle3 = new Bundle();            
+			            
+			DataWrapper dataWrapper = new DataWrapper((ArrayList<LinkedinUser>)listRecipients);
+			bundle3.putSerializable("connection_list", dataWrapper);			
+			bundle3.putString("callingFrom","ProfileFragment");
+			messageFragment.setArguments(bundle3);
+			
+            FragmentTransaction transaction3 = mFragActivityContext.getSupportFragmentManager().beginTransaction();
+            
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack so the user can navigate back
+            transaction3.replace(R.id.fragment_container, messageFragment, "message");
+            transaction3.addToBackStack(null);
+
+            // Commit the transaction
+            transaction3.commit();
+            
 			break;
 			
 			

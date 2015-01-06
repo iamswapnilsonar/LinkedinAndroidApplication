@@ -64,7 +64,7 @@ public class LinkedinProfileFragment extends Fragment{
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				((BaseActivity) getActivity()).showHideNevigationDrawer();
+				getActivity().onBackPressed();
 			}
 		});
 

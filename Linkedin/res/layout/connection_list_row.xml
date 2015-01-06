@@ -5,43 +5,36 @@
     android:background="@drawable/list_selector"
     android:orientation="horizontal" >
 
-    <ImageView
+    <CheckBox
         android:id="@+id/checkbox"
         android:layout_width="20dip"
         android:layout_height="20dip"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:focusable="false"
-        android:src="@drawable/ic_launcher" />
+        android:focusable="false" />
     <!-- ListRow Left sied Thumbnail image -->
 
-    <FrameLayout
+    <ImageView
         android:id="@+id/thumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
         android:layout_centerVertical="true"
         android:layout_marginBottom="10dip"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="10dip"
         android:layout_marginTop="10dip"
         android:layout_toRightOf="@+id/checkbox"
-        android:background="@drawable/image_bg"
         android:focusable="false"
-        android:padding="3dip" >
-
-        <ImageView
-            android:id="@+id/list_image"
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:src="@drawable/rihanna" />
-    </FrameLayout>
+        android:padding="3dip"
+        android:src="@drawable/rihanna" >
+    </ImageView>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/thumbnail"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/message"
+        android:layout_toLeftOf="@+id/btn_single_message"
         android:layout_toRightOf="@+id/thumbnail"
         android:orientation="vertical" >
 
@@ -85,15 +78,15 @@
     <!-- Rightend Arrow -->
 
     <Button
-        android:id="@+id/message"
+        android:id="@+id/btn_single_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
-        android:background="@drawable/btn_messageall_tap_effect"
+        android:background="@drawable/btn_single_message_tap_effect"
         android:focusable="false"
-        android:visibility="invisible" />
+        android:visibility="visible" />
 
 </RelativeLayout>

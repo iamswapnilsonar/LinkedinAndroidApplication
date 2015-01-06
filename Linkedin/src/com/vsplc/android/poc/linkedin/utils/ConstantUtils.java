@@ -6,7 +6,7 @@ public class ConstantUtils {
 	public static final String USER_INFO_FEILDS = "id,first-name,last-name,headline,location:(name,country:(code)),industry,picture-url,public-profile-url,num-connections,num-connections-capped";
 	
 	// Linked-in User Profile information
-	public static final String SIGNED_USER_INFO_FEILDS = "id,first-name,last-name,headline,location:(name,country:(code)),industry,picture-url,public-profile-url,num-connections,skills,languages,summary";
+	public static final String SIGNED_USER_INFO_FEILDS = "id,first-name,last-name,headline,location:(name,country:(code)),industry,picture-url,public-profile-url,num-connections,skills,languages,summary,email-address";
 	
 	// Linked-in Company Profile information
 	public static final String COMPANY_INFO_FEILDS = "id,name";
@@ -17,6 +17,6 @@ public class ConstantUtils {
 	public static final String GOOGLE_MAP_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.GoogleMapFragment";
 	public static final String LINKEDIN_PROFILE_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.LinkedinProfileFragment";
 	public static final String INDUSTRIES_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.IndustriesFragment";
-	
+	public static final String MESSAGE_FRAGMENT = "com.vsplc.android.poc.linkedin.fragments.MessageFragment";
 	
 }

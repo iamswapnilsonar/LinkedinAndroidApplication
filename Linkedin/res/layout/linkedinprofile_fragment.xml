@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
-            android:background="@drawable/btn_list_tap_effect" />
+            android:background="@drawable/btn_back_tap_effect" />
 
         <Button
             android:id="@+id/btn_right"
